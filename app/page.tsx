@@ -1,25 +1,28 @@
-// app/page.tsx v5.7.0
-"use client"
+'use client'
 
-import { useState, useCallback, useEffect } from "react"
-import { motion, AnimatePresence } from "motion/react"
-import { Sparkles, Shuffle, Quote } from "lucide-react"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { JOKES_DATA } from "@/lib/jokes-data"
+import { useState, useCallback, useEffect } from 'react'
+import { AnimatePresence } from 'motion/react'
+import { Sparkles } from 'lucide-react'
+import { ThemeToggle } from '@/components/theme-toggle'
+import { JokeCard } from '@/components/joke-card'
+import { NavigationControls } from '@/components/navigation-controls'
+import { JOKES_DATA } from '@/lib/jokes-data'
+import { useFavorites } from '@/hooks/use-favorites'
+
+// app/page.tsx v5.8.0
 
 export default function Page() {
   const [jokes] = useState<string[]>(JOKES_DATA)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [mounted, setMounted] = useState(false)
   const [direction, setDirection] = useState(0)
+  const { toggleFavorite, isFavorite, isLoaded: favoritesLoaded } = useFavorites()
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setMounted(true)
       if (JOKES_DATA.length > 0) {
         setCurrentIndex(Math.floor(Math.random() * JOKES_DATA.length))
-      } else {
-        setCurrentIndex(0)
       }
     }, 0)
     return () => clearTimeout(timer)
@@ -30,7 +33,7 @@ export default function Page() {
     setDirection(0)
     setCurrentIndex(prev => {
       let nextIndex = prev
-      while (nextIndex === prev) {
+      while (nextIndex === prev && jokes.length > 1) {
         nextIndex = Math.floor(Math.random() * jokes.length)
       }
       return nextIndex
@@ -49,6 +52,16 @@ export default function Page() {
     setCurrentIndex(prev => (prev - 1 + jokes.length) % jokes.length)
   }, [jokes.length])
 
+  const handleDragEnd = useCallback((offset: { x: number }) => {
+    if (offset.x < -50) {
+      handleNext()
+    } else if (offset.x > 50) {
+      handlePrev()
+    }
+  }, [handleNext, handlePrev])
+
+  const isReady = mounted && favoritesLoaded
+
   return (
     <div id="page-wrapper" className="flex min-h-screen flex-col bg-neutral-50 dark:bg-neutral-950 transition-colors duration-300">
       <header id="main-header" className="sticky top-0 z-10 border-b border-neutral-200/50 bg-white/90 backdrop-blur-sm dark:border-neutral-800/50 dark:bg-neutral-950/90">
@@ -66,88 +79,34 @@ export default function Page() {
       <main id="main-content" className="flex flex-1 flex-col items-center justify-center px-4 py-6 md:px-12 lg:px-24 overflow-hidden">
         <div id="joke-viewer-container" className="relative w-full max-w-3xl lg:max-w-4xl">
           <AnimatePresence mode="wait" custom={direction}>
-            {mounted && (
-              <motion.div
-                id={`joke-card-${currentIndex}`}
-                key={currentIndex}
-                custom={direction}
-                drag="x"
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.7}
-                onDragEnd={(e, { offset }) => {
-                  if (offset.x < -50) {
-                    handleNext()
-                  } else if (offset.x > 50) {
-                    handlePrev()
-                  }
-                }}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                variants={{
-                  initial: (dir: number) => ({
-                    opacity: 0,
-                    scale: 0.98,
-                    x: dir === 0 ? 0 : dir * 50,
-                    y: dir === 0 ? 10 : 0
-                  }),
-                  animate: { opacity: 1, scale: 1, x: 0, y: 0 },
-                  exit: (dir: number) => ({
-                    opacity: 0,
-                    scale: 0.98,
-                    x: dir === 0 ? 0 : dir * -50,
-                    y: dir === 0 ? -10 : 0
-                  })
-                }}
-                transition={{ duration: 0.25 }}
-                className="relative flex min-h-[350px] flex-col items-center justify-center rounded-3xl bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:bg-neutral-900 dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] sm:p-12 md:min-h-[450px] md:p-16 lg:p-20 touch-pan-y cursor-grab active:cursor-grabbing"
-              >
-                <div className="absolute top-8 left-8 opacity-10 dark:opacity-20">
-                  <Quote className="h-12 w-12 rotate-180 fill-current" />
-                </div>
-                
-                <div className="relative z-10 flex flex-col items-center gap-8">
-                  <p id="joke-text" className="max-w-[90%] text-center font-serif text-3xl font-light leading-snug tracking-tight text-neutral-800 dark:text-neutral-200 sm:text-4xl md:text-5xl lg:text-6xl select-none">
-                    {jokes.length > 0 ? jokes[currentIndex] : "暂无笑话"}
-                  </p>
-                  
-                  {jokes.length > 0 && (
-                    <div className="flex items-center gap-4 opacity-30">
-                      <div className="h-px w-8 bg-current" />
-                      <span className="font-mono text-xs tracking-widest uppercase">
-                        {String(currentIndex + 1).padStart(3, '0')} / {String(jokes.length).padStart(3, '0')}
-                      </span>
-                      <div className="h-px w-8 bg-current" />
-                    </div>
-                  )}
-                </div>
-
-                <div className="absolute bottom-8 right-8 opacity-10 dark:opacity-20">
-                  <Quote className="h-12 w-12 fill-current" />
-                </div>
-              </motion.div>
+            {isReady && jokes.length > 0 && (
+              <JokeCard
+                joke={jokes[currentIndex]}
+                index={currentIndex}
+                total={jokes.length}
+                direction={direction}
+                onDragEnd={handleDragEnd}
+              />
             )}
-            {!mounted && (
+            {!isReady && (
               <div className="flex min-h-[350px] flex-col justify-center rounded-3xl bg-white p-8 shadow-sm dark:bg-neutral-900 sm:p-12 md:min-h-[450px] md:p-16 lg:p-20">
                 <div className="h-12 w-3/4 animate-pulse self-center rounded-lg bg-neutral-100 dark:bg-neutral-800" />
               </div>
             )}
           </AnimatePresence>
 
-          <div id="nav-controls" className="mt-10 flex items-center justify-center md:mt-12">
-            <button
-              id="btn-random"
-              onClick={handleRandom}
-              className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-lg font-bold text-neutral-900 shadow-sm transition-all hover:bg-neutral-100 active:scale-95 dark:bg-neutral-900 dark:text-neutral-50 dark:hover:bg-neutral-800 md:h-20 md:w-20 md:text-xl"
-            >
-              <Shuffle className="h-6 w-6 md:h-7 md:w-7" />
-            </button>
-          </div>
+          {isReady && jokes.length > 0 && (
+            <NavigationControls
+              onRandom={handleRandom}
+              onPrev={handlePrev}
+              onNext={handleNext}
+              onToggleFavorite={() => toggleFavorite(currentIndex)}
+              isFavorite={isFavorite(currentIndex)}
+              jokeText={jokes[currentIndex]}
+            />
+          )}
         </div>
-
       </main>
     </div>
   )
 }
-
-
