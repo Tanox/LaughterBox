@@ -1,32 +1,41 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 const FAVORITES_KEY = 'laughterbox-favorites'
 
 export function useFavorites() {
-  const [favorites, setFavorites] = useState<number[]>([])
-  const [isLoaded, setIsLoaded] = useState(false)
-
-  // Load favorites from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem(FAVORITES_KEY)
-    if (saved) {
-      try {
-        setFavorites(JSON.parse(saved))
-      } catch (e) {
-        console.error('Failed to load favorites', e)
+  const [favorites, setFavorites] = useState<number[]>(() => {
+    // Try to load from localStorage during initialization
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(FAVORITES_KEY)
+      if (saved) {
+        try {
+          return JSON.parse(saved)
+        } catch (e) {
+          console.error('Failed to load favorites', e)
+        }
       }
     }
-    setIsLoaded(true)
+    return []
+  })
+  const [isLoaded, setIsLoaded] = useState(false)
+  const firstRender = useRef(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoaded(true)
+    }, 0)
+    return () => clearTimeout(timer)
   }, [])
 
   // Save favorites to localStorage
   useEffect(() => {
-    if (isLoaded) {
+    if (!firstRender.current) {
       localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites))
     }
-  }, [favorites, isLoaded])
+    firstRender.current = false
+  }, [favorites])
 
   const toggleFavorite = useCallback((index: number) => {
     setFavorites(prev => {
