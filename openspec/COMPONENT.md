@@ -8,10 +8,11 @@
 
 | 组件名 | 文件名 | 版本 | 类型 | 状态 |
 |-------|-------|------|------|------|
-| Page | app/page.tsx | v5.7.0 | 页面组件 | ✅ 核心 |
+| Page | app/page.tsx | v5.8.0 | 页面组件 | ✅ 核心 |
 | ThemeProvider | components/theme-provider.tsx | v4.0.0 | 上下文提供者 | ✅ 核心 |
 | ThemeToggle | components/theme-toggle.tsx | v5.3.2 | UI 组件 | ✅ 核心 |
-| JokeCard | components/joke-card.tsx | v4.0.0 | UI 组件 | ⚠️ 备用 |
+| JokeCard | components/joke-card.tsx | v4.0.0 | UI 组件 | ✅ 核心 |
+| NavigationControls | components/navigation-controls.tsx | v5.8.0 | UI 组件 | ✅ 核心 |
 
 ## 3. Page 组件 (主页面)
 
@@ -21,7 +22,7 @@
 |-----|-----|
 | 文件路径 | app/page.tsx |
 | 组件名 | Page |
-| 版本 | v5.7.0 |
+| 版本 | v5.8.0 |
 | 类型 | 客户端组件 (`"use client"`) |
 | 导出方式 | 默认导出 |
 | 依赖 | React、Motion、Lucide React、JOKES_DATA |
@@ -506,9 +507,169 @@ export default function JokesList() {
 
 ---
 
-## 7. 组件设计原则
+## 7. NavigationControls 组件
 
-### 7.1 设计规范
+### 7.1 基本信息
+
+| 属性 | 值 |
+|-----|-----|
+| 文件路径 | components/navigation-controls.tsx |
+| 组件名 | NavigationControls |
+| 版本 | v5.8.0 |
+| 类型 | 客户端组件 |
+| 导出方式 | 命名导出 |
+| 依赖 | Lucide React、React |
+
+### 7.2 接口定义
+
+```typescript
+interface NavigationControlsProps {
+  onRandom: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+  onToggleFavorite: () => void;
+  isFavorite: boolean;
+  jokeText: string;
+  autoPlay: boolean;
+  onToggleAutoPlay: () => void;
+}
+
+export function NavigationControls({ 
+  onRandom, 
+  onPrev, 
+  onNext, 
+  onToggleFavorite,
+  isFavorite,
+  jokeText,
+  autoPlay,
+  onToggleAutoPlay
+}: NavigationControlsProps): JSX.Element;
+```
+
+### 7.3 Props 说明
+
+| Prop | 类型 | 必填 | 说明 |
+|-----|------|------|------|
+| onRandom | () => void | 是 | 随机切换笑话的回调函数 |
+| onPrev | () => void | 是 | 切换到上一条笑话的回调函数 |
+| onNext | () => void | 是 | 切换到下一条笑话的回调函数 |
+| onToggleFavorite | () => void | 是 | 切换收藏状态的回调函数 |
+| isFavorite | boolean | 是 | 当前笑话是否已收藏 |
+| jokeText | string | 是 | 当前笑话文本内容（用于复制和分享） |
+| autoPlay | boolean | 是 | 是否启用自动播放 |
+| onToggleAutoPlay | () => void | 是 | 切换自动播放状态的回调函数 |
+
+### 7.4 状态管理
+
+| 状态名 | 类型 | 初始值 | 用途 |
+|-------|------|-------|------|
+| copied | boolean | false | 复制成功提示 |
+
+### 7.5 核心功能
+
+#### handleCopy()
+
+将当前笑话文本复制到剪贴板。
+
+```typescript
+const handleCopy = async () => {
+  try {
+    await navigator.clipboard.writeText(jokeText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  } catch (e) {
+    console.error('Failed to copy', e);
+  }
+};
+```
+
+#### handleShare()
+
+使用 Web Share API 分享当前笑话，如果不支持则回退到复制功能。
+
+```typescript
+const handleShare = async () => {
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'LaughterBox',
+        text: jokeText,
+        url: window.location.href
+      });
+    } catch (e) {
+      console.error('Failed to share', e);
+    }
+  } else {
+    handleCopy();
+  }
+};
+```
+
+### 7.6 渲染结构
+
+```tsx
+<div id="nav-controls" className="mt-10 flex flex-col items-center gap-4 md:mt-12">
+  <div className="flex items-center gap-4">
+    <button id="btn-prev" onClick={onPrev} aria-label="上一个">
+      <ChevronLeft />
+    </button>
+    <button id="btn-random" onClick={onRandom} aria-label="随机">
+      <Shuffle />
+    </button>
+    <button id="btn-next" onClick={onNext} aria-label="下一个">
+      <ChevronRight />
+    </button>
+  </div>
+  
+  <div className="flex items-center gap-3">
+    <button id="btn-autoplay" onClick={onToggleAutoPlay} aria-label={autoPlay ? '暂停自动播放' : '开始自动播放'}>
+      {autoPlay ? <Pause /> : <Play />}
+    </button>
+    <button id="btn-favorite" onClick={onToggleFavorite} aria-label={isFavorite ? '取消收藏' : '收藏'}>
+      <Heart className={isFavorite ? 'fill-current' : ''} />
+    </button>
+    <button id="btn-copy" onClick={handleCopy} aria-label="复制">
+      {copied ? <span className="text-sm font-medium text-green-500">✓</span> : <Copy />}
+    </button>
+    <button id="btn-share" onClick={handleShare} aria-label="分享">
+      <Share2 />
+    </button>
+  </div>
+</div>
+```
+
+### 7.7 使用示例
+
+```tsx
+import { NavigationControls } from "@/components/navigation-controls";
+
+export default function JokeViewer() {
+  const handleRandom = () => console.log('Random clicked');
+  const handlePrev = () => console.log('Prev clicked');
+  const handleNext = () => console.log('Next clicked');
+  const handleToggleFavorite = () => console.log('Toggle favorite');
+  const handleToggleAutoPlay = () => console.log('Toggle autoplay');
+
+  return (
+    <NavigationControls
+      onRandom={handleRandom}
+      onPrev={handlePrev}
+      onNext={handleNext}
+      onToggleFavorite={handleToggleFavorite}
+      isFavorite={false}
+      jokeText="这是一条笑话"
+      autoPlay={false}
+      onToggleAutoPlay={handleToggleAutoPlay}
+    />
+  );
+}
+```
+
+---
+
+## 9. 组件设计原则
+
+### 9.1 设计规范
 
 1. **单一职责原则**：每个组件只负责一个明确的功能
 2. **接口清晰**：使用 TypeScript 接口明确定义 Props
@@ -516,22 +677,22 @@ export default function JokesList() {
 4. **响应式设计**：确保在各种屏幕尺寸上正常显示
 5. **深色模式**：使用 Tailwind CSS 的 dark: 前缀支持
 
-### 7.2 命名规范
+### 9.2 命名规范
 
-#### 7.2.1 文件命名
+#### 9.2.1 文件命名
 
 - 组件文件：PascalCase（如 ThemeToggle.tsx）
 - Hook 文件：camelCase（如 use-mobile.ts）
 - 工具文件：camelCase（如 utils.ts）
 - 数据文件：kebab-case（如 jokes-data.ts）
 
-#### 7.2.2 组件命名
+#### 9.2.2 组件命名
 
 - 组件名：PascalCase（如 ThemeToggle）
 - 导出的函数组件：PascalCase
 - 默认导出：PascalCase
 
-#### 7.2.3 ID 命名规范
+#### 9.2.3 ID 命名规范
 
 | 元素类型 | 命名格式 | 示例 |
 |---------|---------|------|
@@ -542,7 +703,7 @@ export default function JokesList() {
 | 索引 | {name}-index | joke-index |
 | 卡片 | {name}-card-{id} | joke-card-0 |
 
-### 7.3 版本管理规范
+### 9.3 版本管理规范
 
 每个组件文件的顶部应包含版本注释：
 
@@ -557,9 +718,9 @@ export default function JokesList() {
 
 ---
 
-## 8. 附录
+## 10. 附录
 
-### 8.1 图标库
+### 10.1 图标库
 
 本项目使用 Lucide React 图标库：
 
@@ -572,8 +733,14 @@ export default function JokesList() {
 | Moon | 深色模式 |
 | Check | 复制成功 |
 | Copy | 复制按钮 |
+| Share2 | 分享按钮 |
+| Play | 自动播放开始 |
+| Pause | 自动播放暂停 |
+| ChevronLeft | 上一个 |
+| ChevronRight | 下一个 |
+| Heart | 收藏 |
 
-### 8.2 相关资源
+### 10.2 相关资源
 
 - [React 官方文档](https://react.dev/)
 - [Next.js App Router](https://nextjs.org/docs/app)
