@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## [5.8.0] - 2026-05-23
+### Fixed
+- Fixed syntax error in `lib/jokes-data.ts` (missing closing array bracket).
+- Fixed linting issues by ensuring proper file structure.
+
+### Updated
+- Updated version number across all files from 5.7.0 to 5.8.0.
+- Updated `package.json` name from "ai-studio-applet" to "laughterbox".
+- Refactored and fixed jokes data structure.
+
 ## [5.7.0]
 ### Added
 - Optimized joke text typography with decorative quotes and index indicators.

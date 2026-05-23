@@ -9,7 +9,7 @@ import { NavigationControls } from '@/components/navigation-controls'
 import { JOKES_DATA } from '@/lib/jokes-data'
 import { useFavorites } from '@/hooks/use-favorites'
 
-// app/page.tsx v5.9.0
+// app/page.tsx v5.8.0
 
 export default function Page() {
   const [jokes] = useState<string[]>(JOKES_DATA)

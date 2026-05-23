@@ -52,7 +52,7 @@ OpenSpec 是一种开放的项目规范标准，旨在提供：
 | 项 | 值 |
 |---|---|
 | 项目名称 | LaughterBox（笑话大集合） |
-| 当前版本 | v5.7.0 |
+| 当前版本 | v5.8.0 |
 | 项目类型 | 渐进式 Web 应用（PWA） |
 | 技术栈 | Next.js 15 + React 19 + TypeScript + Tailwind CSS + Motion |
 | 文档语言 | 中文 |

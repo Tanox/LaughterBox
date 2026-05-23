@@ -1,6 +1,6 @@
 {
-  "name": "ai-studio-applet",
-  "version": "0.1.0",
+  "name": "laughterbox",
+  "version": "5.8.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
