@@ -1,6 +1,6 @@
 'use client'
 
-import { Shuffle, Heart, Share2, Copy, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Shuffle, Heart, Share2, Copy, ChevronLeft, ChevronRight, Play, Pause } from 'lucide-react'
 import { useState } from 'react'
 
 interface NavigationControlsProps {
@@ -10,15 +10,19 @@ interface NavigationControlsProps {
   onToggleFavorite: () => void
   isFavorite: boolean
   jokeText: string
+  autoPlay: boolean
+  onToggleAutoPlay: () => void
 }
 
 export function NavigationControls({ 
   onRandom, 
   onPrev, 
   onNext, 
-  onToggleFavorite, 
+  onToggleFavorite,
   isFavorite,
-  jokeText 
+  jokeText,
+  autoPlay,
+  onToggleAutoPlay
 }: NavigationControlsProps) {
   const [copied, setCopied] = useState(false)
 
@@ -80,6 +84,19 @@ export function NavigationControls({
       </div>
 
       <div className="flex items-center gap-3">
+        <button
+          id="btn-autoplay"
+          onClick={onToggleAutoPlay}
+          className={`flex h-10 w-10 items-center justify-center rounded-full transition-all hover:scale-110 active:scale-95 ${
+            autoPlay 
+              ? 'text-blue-500' 
+              : 'text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300'
+          }`}
+          aria-label={autoPlay ? '暂停自动播放' : '开始自动播放'}
+        >
+          {autoPlay ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
+        </button>
+
         <button
           id="btn-favorite"
           onClick={onToggleFavorite}

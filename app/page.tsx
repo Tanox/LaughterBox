@@ -9,13 +9,14 @@ import { NavigationControls } from '@/components/navigation-controls'
 import { JOKES_DATA } from '@/lib/jokes-data'
 import { useFavorites } from '@/hooks/use-favorites'
 
-// app/page.tsx v5.8.0
+// app/page.tsx v5.9.0
 
 export default function Page() {
   const [jokes] = useState<string[]>(JOKES_DATA)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [mounted, setMounted] = useState(false)
   const [direction, setDirection] = useState(0)
+  const [autoPlay, setAutoPlay] = useState(false)
   const { toggleFavorite, isFavorite, isLoaded: favoritesLoaded } = useFavorites()
 
   useEffect(() => {
@@ -27,6 +28,23 @@ export default function Page() {
     }, 0)
     return () => clearTimeout(timer)
   }, [])
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null
+    
+    if (autoPlay && jokes.length > 1) {
+      interval = setInterval(() => {
+        setDirection(1)
+        setCurrentIndex(prev => (prev + 1) % jokes.length)
+      }, 30000)
+    }
+    
+    return () => {
+      if (interval) {
+        clearInterval(interval)
+      }
+    }
+  }, [autoPlay, jokes.length])
 
   const handleRandom = useCallback(() => {
     if (jokes.length <= 1) return
@@ -103,6 +121,8 @@ export default function Page() {
               onToggleFavorite={() => toggleFavorite(currentIndex)}
               isFavorite={isFavorite(currentIndex)}
               jokeText={jokes[currentIndex]}
+              autoPlay={autoPlay}
+              onToggleAutoPlay={() => setAutoPlay(prev => !prev)}
             />
           )}
         </div>
