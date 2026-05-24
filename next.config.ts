@@ -7,6 +7,12 @@ const isDeployingToEdgeOne = process.env.EDGEONE === '1';
 const withPWA = withPWAInit({
   dest: 'public',
   disable: process.env.NODE_ENV === 'development',
+  cacheOnFrontEndNav: true,
+  aggressiveFrontEndNavCaching: true,
+  reloadOnOnline: true,
+  workboxOptions: {
+    disableDevLogs: true,
+  }
 });
 
 const nextConfig: NextConfig = {
@@ -26,12 +32,16 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
-    unoptimized: false,
+    unoptimized: true,
   },
   ...(isDeployingToVercel || isDeployingToEdgeOne
     ? {}
     : { output: 'standalone' }),
   transpilePackages: ['motion'],
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
+  },
   webpack: (config, {dev}) => {
     if (dev && process.env.DISABLE_HMR === 'true') {
       config.watchOptions = {
