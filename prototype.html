@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaughterBox - 笑话大集合</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-light: #fafafa;
+            --bg-dark: #030303;
+            --card-light: #ffffff;
+            --card-dark: #171717;
+            --text-light: #171717;
+            --text-dark: #fafafa;
+            --border-light: rgba(229, 229, 229, 0.5);
+            --border-dark: rgba(38, 38, 38, 0.5);
+            --shadow-light: 0 8px 30px rgba(0, 0, 0, 0.04);
+            --shadow-dark: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background: var(--bg-light);
+            color: var(--text-light);
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+            user-select: none;
+        }
+
+        body.dark {
+            background: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        .page-wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 1px solid var(--border-light);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+        }
+
+        body.dark header {
+            border-bottom: 1px solid var(--border-dark);
+            background: rgba(3, 3, 3, 0.9);
+        }
+
+        .header-content {
+            max-width: 72rem;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .header-content {
+                padding: 0.75rem 2rem;
+            }
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .brand-logo svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        @media (min-width: 768px) {
+            .brand-logo svg {
+                width: 1.5rem;
+                height: 1.5rem;
+            }
+        }
+
+        .brand-logo h1 {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        @media (min-width: 768px) {
+            .brand-logo h1 {
+                font-size: 1.25rem;
+            }
+        }
+
+        .theme-toggle {
+            width: 2.25rem;
+            height: 2.25rem;
+            border: 1px solid var(--border-light);
+            border-radius: 0.375rem;
+            background: var(--card-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        body.dark .theme-toggle {
+            border: 1px solid var(--border-dark);
+            background: var(--card-dark);
+        }
+
+        .theme-toggle:hover {
+            background: #f5f5f5;
+        }
+
+        body.dark .theme-toggle:hover {
+            background: #262626;
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .theme-toggle svg {
+            width: 1rem;
+            height: 1rem;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        .sun-icon {
+            transform: rotate(0deg);
+            opacity: 1;
+        }
+
+        body.dark .sun-icon {
+            transform: rotate(-90deg);
+            opacity: 0;
+        }
+
+        .moon-icon {
+            position: absolute;
+            transform: rotate(90deg);
+            opacity: 0;
+        }
+
+        body.dark .moon-icon {
+            transform: rotate(0deg);
+            opacity: 1;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem 1rem;
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            main {
+                padding: 1.5rem 3rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            main {
+                padding: 1.5rem 6rem;
+            }
+        }
+
+        .joke-viewer-container {
+            position: relative;
+            width: 100%;
+            max-width: 48rem;
+        }
+
+        @media (min-width: 1024px) {
+            .joke-viewer-container {
+                max-width: 64rem;
+            }
+        }
+
+        .joke-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 350px;
+            border-radius: 1.5rem;
+            background: var(--card-light);
+            box-shadow: var(--shadow-light);
+            padding: 2rem;
+            cursor: grab;
+        }
+
+        body.dark .joke-card {
+            background: var(--card-dark);
+            box-shadow: var(--shadow-dark);
+        }
+
+        @media (min-width: 640px) {
+            .joke-card {
+                padding: 3rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .joke-card {
+                min-height: 450px;
+                padding: 4rem;
+            }
+        }
+
+        .joke-card:active {
+            cursor: grabbing;
+        }
+
+        .quote-decoration {
+            position: absolute;
+            opacity: 0.1;
+        }
+
+        body.dark .quote-decoration {
+            opacity: 0.2;
+        }
+
+        .quote-decoration.top-left {
+            top: 2rem;
+            left: 2rem;
+            transform: rotate(180deg);
+        }
+
+        .quote-decoration.bottom-right {
+            bottom: 2rem;
+            right: 2rem;
+        }
+
+        .quote-decoration svg {
+            width: 3rem;
+            height: 3rem;
+        }
+
+        .joke-content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .joke-text {
+            max-width: 90%;
+            text-align: center;
+            font-size: 1.875rem;
+            font-weight: 300;
+            line-height: 1.375;
+            letter-spacing: -0.025em;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @media (min-width: 640px) {
+            .joke-text {
+                font-size: 2.25rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .joke-text {
+                font-size: 3rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .joke-text {
+                font-size: 3.75rem;
+            }
+        }
+
+        .joke-index-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            opacity: 0.3;
+        }
+
+        .joke-index-container span {
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .index-line {
+            width: 2rem;
+            height: 1px;
+            background: currentColor;
+        }
+
+        .nav-controls {
+            margin-top: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .nav-controls {
+                margin-top: 3rem;
+            }
+        }
+
+        .main-buttons {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            border: none;
+            background: var(--card-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: var(--shadow-light);
+        }
+
+        body.dark .nav-btn {
+            background: var(--card-dark);
+            box-shadow: var(--shadow-dark);
+        }
+
+        .nav-btn:hover {
+            background: #f5f5f5;
+        }
+
+        body.dark .nav-btn:hover {
+            background: #262626;
+        }
+
+        .nav-btn:active {
+            transform: scale(0.95);
+        }
+
+        .nav-btn.small {
+            width: 3.5rem;
+            height: 3.5rem;
+        }
+
+        .nav-btn.large {
+            width: 4rem;
+            height: 4rem;
+        }
+
+        @media (min-width: 768px) {
+            .nav-btn.small {
+                width: 4rem;
+                height: 4rem;
+            }
+            .nav-btn.large {
+                width: 5rem;
+                height: 5rem;
+            }
+        }
+
+        .nav-btn svg {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .nav-btn svg {
+                width: 1.75rem;
+                height: 1.75rem;
+            }
+        }
+
+        .secondary-buttons {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .secondary-btn {
+            width: 2.5rem;
+            height: 2.5rem;
+            border: none;
+            background: transparent;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #a3a3a3;
+            transition: color 0.2s, transform 0.1s;
+        }
+
+        .secondary-btn:hover {
+            color: #737373;
+            transform: scale(1.1);
+        }
+
+        body.dark .secondary-btn:hover {
+            color: #d4d4d4;
+        }
+
+        .secondary-btn:active {
+            transform: scale(0.95);
+        }
+
+        .secondary-btn svg {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        .secondary-btn.favorite.active {
+            color: #ef4444;
+        }
+
+        .secondary-btn.favorite.active svg {
+            fill: currentColor;
+        }
+
+        .secondary-btn.autoplay.active {
+            color: #3b82f6;
+        }
+
+        .copied-indicator {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #22c55e;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .joke-card.slide-left {
+            animation: slideInLeft 0.3s ease;
+        }
+
+        .joke-card.slide-right {
+            animation: slideInRight 0.3s ease;
+        }
+
+        .joke-card.random {
+            animation: scaleIn 0.3s ease;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <header>
+            <div class="header-content">
+                <div class="brand-logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z"/>
+                        <path d="M5 3l2 4"/>
+                        <path d="M19 3l-2 4"/>
+                        <path d="M5 21l2-4"/>
+                        <path d="M19 21l-2-4"/>
+                    </svg>
+                    <h1>LaughterBox</h1>
+                </div>
+                <button class="theme-toggle" id="theme-toggle" aria-label="切换主题">
+                    <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="4"/>
+                        <path d="M12 2v2"/>
+                        <path d="M12 20v2"/>
+                        <path d="m4.93 4.93 1.41 1.41"/>
+                        <path d="m17.66 17.66 1.41 1.41"/>
+                        <path d="M2 12h2"/>
+                        <path d="M20 12h2"/>
+                        <path d="m6.34 17.66-1.41 1.41"/>
+                        <path d="m19.07 4.93-1.41 1.41"/>
+                    </svg>
+                    <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <div class="joke-viewer-container">
+                <div class="joke-card" id="joke-card">
+                    <div class="quote-decoration top-left">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                        </svg>
+                    </div>
+                    
+                    <div class="joke-content">
+                        <p class="joke-text" id="joke-text">笑是一种没有副作用的镇静剂。</p>
+                        <div class="joke-index-container">
+                            <div class="index-line"></div>
+                            <span id="joke-index">001 / 005</span>
+                            <div class="index-line"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="quote-decoration bottom-right">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="nav-controls">
+                    <div class="main-buttons">
+                        <button class="nav-btn small" id="btn-prev" aria-label="上一个">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m15 18-6-6 6-6"/>
+                            </svg>
+                        </button>
+                        <button class="nav-btn large" id="btn-random" aria-label="随机">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 3h5v5"/>
+                                <path d="M4 20l7-7"/>
+                                <path d="M21 16V8a2 2 0 0 0-2-2h-1"/>
+                                <path d="M3 8v8a2 2 0 0 0 2 2h1"/>
+                                <path d="m21 3-6 6"/>
+                                <path d="M4 4l7 7"/>
+                            </svg>
+                        </button>
+                        <button class="nav-btn small" id="btn-next" aria-label="下一个">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m9 18 6-6-6-6"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="secondary-buttons">
+                        <button class="secondary-btn autoplay" id="btn-autoplay" aria-label="开始自动播放">
+                            <svg class="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                            <svg class="pause-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="6" y="4" width="4" height="16"/>
+                                <rect x="14" y="4" width="4" height="16"/>
+                            </svg>
+                        </button>
+                        <button class="secondary-btn favorite" id="btn-favorite" aria-label="收藏">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                            </svg>
+                        </button>
+                        <button class="secondary-btn" id="btn-copy" aria-label="复制">
+                            <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                            </svg>
+                            <span class="copied-indicator" id="copied-indicator" style="display: none;">✓</span>
+                        </button>
+                        <button class="secondary-btn" id="btn-share" aria-label="分享">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="18" cy="5" r="3"/>
+                                <circle cx="6" cy="12" r="3"/>
+                                <circle cx="18" cy="19" r="3"/>
+                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const jokes = [
+            "笑是一种没有副作用的镇静剂。",
+            "幽默是心灵的微笑，真诚是灵魂的健康。",
+            "生活中最大的乐趣，就是做别人说你做不到的事。",
+            "快乐的秘诀，不是做你喜欢的事，而是喜欢你做的事。",
+            "每一天都是新的开始，每一天都有新的希望。"
+        ];
+
+        let currentIndex = 0;
+        let isDark = false;
+        let isFavorite = false;
+        let isAutoPlay = false;
+        let autoPlayInterval = null;
+
+        const jokeText = document.getElementById('joke-text');
+        const jokeIndex = document.getElementById('joke-index');
+        const jokeCard = document.getElementById('joke-card');
+        const themeToggle = document.getElementById('theme-toggle');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+        const btnRandom = document.getElementById('btn-random');
+        const btnFavorite = document.getElementById('btn-favorite');
+        const btnCopy = document.getElementById('btn-copy');
+        const btnShare = document.getElementById('btn-share');
+        const btnAutoPlay = document.getElementById('btn-autoplay');
+        const copiedIndicator = document.getElementById('copied-indicator');
+        const copyIcon = document.querySelector('#btn-copy .copy-icon');
+        const playIcon = document.querySelector('#btn-autoplay .play-icon');
+        const pauseIcon = document.querySelector('#btn-autoplay .pause-icon');
+
+        function updateJoke(animation = 'random') {
+            jokeCard.classList.remove('slide-left', 'slide-right', 'random');
+            void jokeCard.offsetWidth;
+            
+            switch(animation) {
+                case 'left':
+                    jokeCard.classList.add('slide-left');
+                    break;
+                case 'right':
+                    jokeCard.classList.add('slide-right');
+                    break;
+                default:
+                    jokeCard.classList.add('random');
+            }
+            
+            jokeText.textContent = jokes[currentIndex];
+            jokeIndex.textContent = `${String(currentIndex + 1).padStart(3, '0')} / ${String(jokes.length).padStart(3, '0')}`;
+            isFavorite = false;
+            btnFavorite.classList.remove('active');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            isDark = !isDark;
+            document.body.classList.toggle('dark', isDark);
+        });
+
+        btnPrev.addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + jokes.length) % jokes.length;
+            updateJoke('right');
+        });
+
+        btnNext.addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % jokes.length;
+            updateJoke('left');
+        });
+
+        btnRandom.addEventListener('click', () => {
+            let newIndex;
+            do {
+                newIndex = Math.floor(Math.random() * jokes.length);
+            } while (newIndex === currentIndex && jokes.length > 1);
+            currentIndex = newIndex;
+            updateJoke('random');
+        });
+
+        btnFavorite.addEventListener('click', () => {
+            isFavorite = !isFavorite;
+            btnFavorite.classList.toggle('active', isFavorite);
+        });
+
+        btnCopy.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(jokes[currentIndex]);
+                copyIcon.style.display = 'none';
+                copiedIndicator.style.display = 'inline';
+                setTimeout(() => {
+                    copyIcon.style.display = 'inline';
+                    copiedIndicator.style.display = 'none';
+                }, 2000);
+            } catch (e) {
+                console.error('Failed to copy', e);
+            }
+        });
+
+        btnShare.addEventListener('click', async () => {
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'LaughterBox',
+                        text: jokes[currentIndex],
+                        url: window.location.href
+                    });
+                } catch (e) {
+                    console.error('Failed to share', e);
+                }
+            } else {
+                try {
+                    await navigator.clipboard.writeText(jokes[currentIndex]);
+                    copyIcon.style.display = 'none';
+                    copiedIndicator.style.display = 'inline';
+                    setTimeout(() => {
+                        copyIcon.style.display = 'inline';
+                        copiedIndicator.style.display = 'none';
+                    }, 2000);
+                } catch (e) {
+                    console.error('Failed to copy', e);
+                }
+            }
+        });
+
+        btnAutoPlay.addEventListener('click', () => {
+            isAutoPlay = !isAutoPlay;
+            btnAutoPlay.classList.toggle('active', isAutoPlay);
+            playIcon.style.display = isAutoPlay ? 'none' : 'inline';
+            pauseIcon.style.display = isAutoPlay ? 'inline' : 'none';
+            btnAutoPlay.setAttribute('aria-label', isAutoPlay ? '暂停自动播放' : '开始自动播放');
+            
+            if (isAutoPlay) {
+                autoPlayInterval = setInterval(() => {
+                    currentIndex = (currentIndex + 1) % jokes.length;
+                    updateJoke('left');
+                }, 30000);
+            } else {
+                if (autoPlayInterval) {
+                    clearInterval(autoPlayInterval);
+                    autoPlayInterval = null;
+                }
+            }
+        });
+
+        let startX = 0;
+        let isDragging = false;
+
+        jokeCard.addEventListener('mousedown', (e) => {
+            startX = e.clientX;
+            isDragging = true;
+        });
+
+        jokeCard.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+        });
+
+        jokeCard.addEventListener('mouseup', (e) => {
+            if (!isDragging) return;
+            const endX = e.clientX;
+            const diffX = endX - startX;
+            
+            if (diffX < -50) {
+                currentIndex = (currentIndex + 1) % jokes.length;
+                updateJoke('left');
+            } else if (diffX > 50) {
+                currentIndex = (currentIndex - 1 + jokes.length) % jokes.length;
+                updateJoke('right');
+            }
+            
+            isDragging = false;
+        });
+
+        jokeCard.addEventListener('mouseleave', () => {
+            isDragging = false;
+        });
+
+        jokeCard.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            isDragging = true;
+        });
+
+        jokeCard.addEventListener('touchend', (e) => {
+            if (!isDragging) return;
+            const endX = e.changedTouches[0].clientX;
+            const diffX = endX - startX;
+            
+            if (diffX < -50) {
+                currentIndex = (currentIndex + 1) % jokes.length;
+                updateJoke('left');
+            } else if (diffX > 50) {
+                currentIndex = (currentIndex - 1 + jokes.length) % jokes.length;
+                updateJoke('right');
+            }
+            
+            isDragging = false;
+        });
+
+        updateJoke('random');
+    </script>
+</body>
+</html>
