@@ -38,16 +38,13 @@
 │  │  - useCallback (handleRandom, handleNext)     │   │
 │  │  - useEffect (初始化逻辑)                      │   │
 │  └─────────────────────────────────────────────────┘   │
-│  ┌──────────────────┐                                   │
-│  │ use-mobile.ts    │ (设备检测 Hook)                   │
-│  └──────────────────┘                                   │
 └─────────────────────────────────────────────────────────┘
                             ↓
 ┌─────────────────────────────────────────────────────────┐
 │                     数据层                                │
 │  ┌─────────────────────────────────────────────────┐   │
 │  │            lib/jokes-data.ts (静态数据)         │   │
-│  │            119 条笑话                           │   │
+│  │            124 条笑话                           │   │
 │  └─────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────┘
                             ↓
@@ -113,7 +110,8 @@ RootLayout (app/layout.tsx)
 | Page | app/page.tsx | 主页面、状态管理、核心业务逻辑、动画处理 | 客户端组件 |
 | ThemeProvider | components/theme-provider.tsx | 主题上下文提供者、封装 next-themes | 客户端组件 |
 | ThemeToggle | components/theme-toggle.tsx | 主题切换 UI、图标动画 | 客户端组件 |
-| JokeCard | components/joke-card.tsx | 笑话卡片展示（备用组件） | 客户端组件 |
+| JokeCard | components/joke-card.tsx | 笑话卡片展示、拖拽导航 | 客户端组件 |
+| NavigationControls | components/navigation-controls.tsx | 导航控制按钮（随机、上一个、下一个等） | 客户端组件 |
 
 ## 4. 状态管理
 
