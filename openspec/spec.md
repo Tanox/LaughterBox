@@ -7,7 +7,8 @@
 | 项目属性 | 值 |
 |---------|---|
 | **项目名称** | LaughterBox（笑话大集合） |
-| **当前版本** | v5.8.0 |
+| **当前版本** | v5.9.0 |
+| **笑话数量** | 124 条 |
 | **项目类型** | 渐进式 Web 应用（PWA） |
 | **项目描述** | 极简设计的笑话展示应用，提供纯粹的阅读体验 |
 | **主要语言** | 中文 |
@@ -88,7 +89,7 @@
 - 初始加载时，延迟随机选择笑话（避免水合错误）
 - 随机切换时确保与当前笑话不同
 - 笑话文本居中显示，使用大字号衬线字体
-- 显示当前笑话索引和总数（格式：`001 / 1012`）
+- 显示当前笑话索引和总数（格式：`001 / 124`）
 
 **边界条件**：
 - 笑话数据为空：显示"暂无笑话"提示
@@ -166,20 +167,19 @@
 ├── app/                          # Next.js App Router 目录
 │   ├── globals.css              # 全局样式
 │   ├── layout.tsx               # 根布局组件
-│   ├── page.tsx                 # 主页面组件
-│   └── metadata.json            # 应用元数据
+│   └── page.tsx                 # 主页面组件
 │
 ├── components/                   # React 组件目录
-│   ├── joke-card.tsx            # 笑话卡片组件（备用）
+│   ├── joke-card.tsx            # 笑话卡片组件
+│   ├── navigation-controls.tsx  # 导航控制组件
 │   ├── theme-provider.tsx       # 主题提供者
 │   └── theme-toggle.tsx         # 主题切换按钮
 │
 ├── hooks/                        # 自定义 React Hooks
-│   └── use-mobile.ts            # 移动设备检测 Hook
+│   └── use-favorites.ts         # 收藏功能 Hook
 │
 ├── lib/                          # 工具函数和数据
-│   ├── jokes-data.ts           # 笑话数据源（1012 条笑话）
-│   └── utils.ts                # 通用工具函数
+│   └── jokes-data.ts           # 笑话数据源（119 条笑话）
 │
 ├── openspec/                     # OpenSpec 规范文档
 │   ├── README.md               # 规范文档索引
@@ -194,13 +194,13 @@
 │   ├── icon-512x512.svg        # PWA 图标 512px
 │   └── manifest.json            # PWA 清单文件
 │
-├── .eslintrc.json               # ESLint 配置
 ├── .gitignore                   # Git 忽略文件
 ├── CHANGELOG.md                # 版本更新日志
 ├── DEPLOYMENT_GUIDE.md         # 部署指南
-├── LICENSE                     # 许可证
 ├── README.md                   # 项目说明（中文）
 ├── README_EN.md               # 项目说明（英文）
+├── DESIGN_REVIEW.md            # 设计审查报告
+├── prototype.html              # 高保真原型
 ├── edgeone.config.json        # 腾讯云 EdgeOne 配置
 ├── eslint.config.mjs          # ESLint Flat Config
 ├── metadata.json              # 项目元数据
@@ -208,10 +208,19 @@
 ├── package.json               # 依赖管理
 ├── package-lock.json          # 依赖锁定文件
 ├── postcss.config.mjs         # PostCSS 配置
-├── tailwind.config.ts         # Tailwind CSS 配置
 ├── tsconfig.json              # TypeScript 配置
 └── vercel.json               # Vercel 部署配置
 ```
+
+## 4.1 高保真原型
+
+项目包含独立的高保真 HTML 原型（`prototype.html`），可以直接在浏览器中打开查看和测试：
+
+- 包含所有核心功能：笑话切换、收藏、分享、自动播放
+- 支持深色/浅色模式切换
+- 响应式设计，适配各种设备
+- 纯 HTML/CSS/JavaScript 实现，无需依赖构建工具
+- 可用于设计评审、用户测试或快速预览
 
 ---
 
@@ -243,6 +252,8 @@
 
 | 版本 | 日期 | 主要变更 |
 |------|------|---------|
+| v5.9.0 | 2026-06-09 | 完善原型文档，对齐代码与规范，解决不一致问题 |
+| v5.8.0 | 2026-06-01 | 创建高保真原型，清理冗余代码，完善文档 |
 | v5.7.0 | 2026-05-21 | 优化随机算法，完善部署配置 |
 | v5.3.2 | - | 主题切换组件优化，添加水合错误预防 |
 | v5.0.0 | - | 笑话数据扩展至 1012 条 |
@@ -260,6 +271,8 @@
 - [项目 README](../README.md)
 - [CHANGELOG](../CHANGELOG.md)
 - [DEPLOYMENT_GUIDE](../DEPLOYMENT_GUIDE.md)
+- [设计审查报告](../DESIGN_REVIEW.md)
+- [高保真原型](../prototype.html)
 
 ### 10.2 外部链接
 

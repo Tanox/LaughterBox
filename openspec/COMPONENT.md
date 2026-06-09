@@ -8,10 +8,10 @@
 
 | 组件名 | 文件名 | 版本 | 类型 | 状态 |
 |-------|-------|------|------|------|
-| Page | app/page.tsx | v5.8.0 | 页面组件 | ✅ 核心 |
+| Page | app/page.tsx | v5.9.0 | 页面组件 | ✅ 核心 |
 | ThemeProvider | components/theme-provider.tsx | v4.0.0 | 上下文提供者 | ✅ 核心 |
 | ThemeToggle | components/theme-toggle.tsx | v5.3.2 | UI 组件 | ✅ 核心 |
-| JokeCard | components/joke-card.tsx | v4.0.0 | UI 组件 | ✅ 核心 |
+| JokeCard | components/joke-card.tsx | v5.8.0 | UI 组件 | ✅ 核心 |
 | NavigationControls | components/navigation-controls.tsx | v5.8.0 | UI 组件 | ✅ 核心 |
 
 ## 3. Page 组件 (主页面)
@@ -22,7 +22,7 @@
 |-----|-----|
 | 文件路径 | app/page.tsx |
 | 组件名 | Page |
-| 版本 | v5.8.0 |
+| 版本 | v5.9.0 |
 | 类型 | 客户端组件 (`"use client"`) |
 | 导出方式 | 默认导出 |
 | 依赖 | React、Motion、Lucide React、JOKES_DATA |
@@ -682,8 +682,7 @@ export default function JokeViewer() {
 #### 9.2.1 文件命名
 
 - 组件文件：PascalCase（如 ThemeToggle.tsx）
-- Hook 文件：camelCase（如 use-mobile.ts）
-- 工具文件：camelCase（如 utils.ts）
+- Hook 文件：camelCase（如 use-favorites.ts）
 - 数据文件：kebab-case（如 jokes-data.ts）
 
 #### 9.2.2 组件命名

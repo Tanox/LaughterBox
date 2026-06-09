@@ -27,16 +27,16 @@ export function JokeCard({ joke, index, total, direction, onDragEnd }: JokeCardP
       variants={{
         initial: (dir: number) => ({
           opacity: 0,
-          scale: 0.98,
+          scale: dir === 0 ? 0.95 : 0.98,
           x: dir === 0 ? 0 : dir * 50,
-          y: dir === 0 ? 10 : 0
+          y: 0
         }),
         animate: { opacity: 1, scale: 1, x: 0, y: 0 },
         exit: (dir: number) => ({
           opacity: 0,
-          scale: 0.98,
+          scale: dir === 0 ? 0.95 : 0.98,
           x: dir === 0 ? 0 : dir * -50,
-          y: dir === 0 ? -10 : 0
+          y: 0
         })
       }}
       transition={{ duration: 0.25 }}
