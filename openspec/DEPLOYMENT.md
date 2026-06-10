@@ -786,7 +786,6 @@ pm2 monit            # 监控
 - [腾讯云 EdgeOne Pages 文档](https://cloud.tencent.com/product/edgeone)
 - [Docker 官方文档](https://docs.docker.com/)
 - [PM2 文档](https://pm2.keymetrics.io/docs/usage/quick-start/)
-- [DEPLOYMENT_GUIDE.md](../DEPLOYMENT_GUIDE.md)
 
 ---
 

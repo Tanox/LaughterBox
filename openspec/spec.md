@@ -196,14 +196,12 @@
 │
 ├── .gitignore                   # Git 忽略文件
 ├── CHANGELOG.md                # 版本更新日志
-├── DEPLOYMENT_GUIDE.md         # 部署指南
 ├── README.md                   # 项目说明（中文）
 ├── README_EN.md               # 项目说明（英文）
 ├── DESIGN_REVIEW.md            # 设计审查报告
 ├── prototype.html              # 高保真原型
 ├── edgeone.config.json        # 腾讯云 EdgeOne 配置
 ├── eslint.config.mjs          # ESLint Flat Config
-├── metadata.json              # 项目元数据
 ├── next.config.ts             # Next.js 配置
 ├── package.json               # 依赖管理
 ├── package-lock.json          # 依赖锁定文件
@@ -269,7 +267,6 @@
 
 - [项目 README](../README.md)
 - [CHANGELOG](../CHANGELOG.md)
-- [DEPLOYMENT_GUIDE](../DEPLOYMENT_GUIDE.md)
 - [设计审查报告](../DESIGN_REVIEW.md)
 - [高保真原型](../prototype.html)
 
