@@ -89,14 +89,14 @@ RootLayout (app/layout.tsx)
 ├── ThemeProvider (app/components/theme-provider.tsx)
 │   └── Page (app/page.tsx)
 │       ├── header (导航栏)
-│       │   ├── Sparkles 图标 (品牌标识)
+│       │   ├── 自定义 SVG 星形图案 (品牌标识)
 │       │   ├── h1 (标题)
 │       │   └── ThemeToggle (主题切换按钮)
 │       └── main (主内容区)
 │           ├── div (笑话查看器容器)
 │           │   ├── AnimatePresence
 │           │   │   └── motion.div (笑话卡片)
-│           │   │       ├── Quote (左上角装饰)
+│           │   │       ├── 自定义 SVG 引号 (左上角装饰)
 │           │   │       ├── p (笑话文本)
 │           │   │       └── div (索引指示器)
 │           │   └── div (导航控制)
@@ -272,10 +272,10 @@ const variants = {
     y: dir === 0 ? -10 : 0,
   }),
 };
-
+```typescript
 const transition = {
-  duration: 0.25,
-  ease: "easeInOut",
+  duration: 0.4,
+  ease: [0.34, 1.56, 0.64, 1], // 弹性缓和曲线
 };
 ```
 
