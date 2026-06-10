@@ -54,7 +54,7 @@
 │       └── jokes-data.ts           # 笑话数据源
 ├── openspec/         # OpenSpec 规范文档
 ├── prototype/        # 原型设计目录
-│   ├── prototype.html          # 高保真原型（124条笑话）
+│   ├── prototype.html          # 高保真原型（1008条笑话）
 │   └── DESIGN_REVIEW.md        # 设计审查报告
 └── package.json      # 项目配置
 ```
@@ -66,7 +66,7 @@
 
 ## 版本信息
 - 当前版本：v5.9.0
-- 笑话数量：124 条
+- 笑话数量：1008 条
 
 ## 许可证
 MIT License

@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [5.9.0] - 2026-06-10
+### Updated
+- Updated version number across all files from 5.8.0 to 5.9.0.
+- Updated joke count in documentation from 124 to 1008.
+- Corrected jokes-data.ts version comment to v5.0.0.
+
 ## [5.8.0] - 2026-05-23
 ### Fixed
 - Fixed syntax error in `lib/jokes-data.ts` (missing closing array bracket).
