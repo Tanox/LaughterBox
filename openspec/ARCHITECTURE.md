@@ -39,15 +39,15 @@
 │  │  - useEffect (初始化逻辑)                      │   │
 │  └─────────────────────────────────────────────────┘   │
 │  ┌──────────────────┐                                   │
-│  │ use-mobile.ts    │ (设备检测 Hook)                   │
+│  │ use-favorites.ts │ (收藏功能 Hook)                   │
 │  └──────────────────┘                                   │
 └─────────────────────────────────────────────────────────┘
                             ↓
 ┌─────────────────────────────────────────────────────────┐
 │                     数据层                                │
 │  ┌─────────────────────────────────────────────────┐   │
-│  │            lib/jokes-data.ts (静态数据)         │   │
-│  │            119 条笑话                           │   │
+│  │            app/lib/jokes-data.ts (静态数据)         │   │
+│  │            124 条笑话                                │   │
 │  └─────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────┘
                             ↓
@@ -86,7 +86,7 @@
 
 ```
 RootLayout (app/layout.tsx)
-├── ThemeProvider (components/theme-provider.tsx)
+├── ThemeProvider (app/components/theme-provider.tsx)
 │   └── Page (app/page.tsx)
 │       ├── header (导航栏)
 │       │   ├── Sparkles 图标 (品牌标识)
@@ -111,9 +111,9 @@ RootLayout (app/layout.tsx)
 |-----|------|------|------|
 | RootLayout | app/layout.tsx | 根布局、主题提供者、字体配置 | 服务端组件 |
 | Page | app/page.tsx | 主页面、状态管理、核心业务逻辑、动画处理 | 客户端组件 |
-| ThemeProvider | components/theme-provider.tsx | 主题上下文提供者、封装 next-themes | 客户端组件 |
-| ThemeToggle | components/theme-toggle.tsx | 主题切换 UI、图标动画 | 客户端组件 |
-| JokeCard | components/joke-card.tsx | 笑话卡片展示（备用组件） | 客户端组件 |
+| ThemeProvider | app/components/theme-provider.tsx | 主题上下文提供者、封装 next-themes | 客户端组件 |
+| ThemeToggle | app/components/theme-toggle.tsx | 主题切换 UI、图标动画 | 客户端组件 |
+| JokeCard | app/components/joke-card.tsx | 笑话卡片展示 | 客户端组件 |
 
 ## 4. 状态管理
 
@@ -187,7 +187,7 @@ setCurrentIndex 更新索引
 
 ```
 ┌─────────────────┐
-│  JOKES_DATA     │ (lib/jokes-data.ts 静态数据)
+│  JOKES_DATA     │ (app/lib/jokes-data.ts 静态数据)
 └────────┬────────┘
          ↓
 ┌─────────────────┐

@@ -2,7 +2,7 @@
 import type {Metadata, Viewport} from 'next';
 import { Noto_Serif_SC } from 'next/font/google';
 import './globals.css'; // Global styles
-import { ThemeProvider } from '@/components/theme-provider';
+import { ThemeProvider } from '@/app/components/theme-provider';
 
 const notoSerif = Noto_Serif_SC({ 
   subsets: ['latin'], 

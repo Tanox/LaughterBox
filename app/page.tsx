@@ -3,11 +3,11 @@
 import { useState, useCallback, useEffect } from 'react'
 import { AnimatePresence } from 'motion/react'
 import { Sparkles } from 'lucide-react'
-import { ThemeToggle } from '@/components/theme-toggle'
-import { JokeCard } from '@/components/joke-card'
-import { NavigationControls } from '@/components/navigation-controls'
-import { JOKES_DATA } from '@/lib/jokes-data'
-import { useFavorites } from '@/hooks/use-favorites'
+import { ThemeToggle } from '@/app/components/theme-toggle'
+import { JokeCard } from '@/app/components/joke-card'
+import { NavigationControls } from '@/app/components/navigation-controls'
+import { JOKES_DATA } from '@/app/lib/jokes-data'
+import { useFavorites } from '@/app/hooks/use-favorites'
 
 // app/page.tsx v5.9.0
 

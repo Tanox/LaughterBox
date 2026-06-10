@@ -220,10 +220,10 @@ import { motion } from "motion/react";
 import { useTheme } from "next-themes";
 
 // 3. 内部组件
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeToggle } from "@/app/components/theme-toggle";
 
-// 4. 工具函数
-import { cn } from "@/lib/utils";
+// 4. 笑话数据
+import { JOKES_DATA } from "@/app/lib/jokes-data";
 
 // 5. 类型定义
 import type { JokeCardProps } from "@/types";
@@ -430,7 +430,7 @@ const notoSerif = Noto_Serif_SC({
 
 ```typescript
 // 按需加载组件
-const HeavyComponent = dynamic(() => import("@/components/HeavyComponent"), {
+const HeavyComponent = dynamic(() => import("@/app/components/NavigationControls"), {
   loading: () => <LoadingSkeleton />,
 });
 ```

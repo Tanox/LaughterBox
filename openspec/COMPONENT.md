@@ -8,11 +8,11 @@
 
 | 组件名 | 文件名 | 版本 | 类型 | 状态 |
 |-------|-------|------|------|------|
-| Page | app/page.tsx | v5.8.0 | 页面组件 | ✅ 核心 |
-| ThemeProvider | components/theme-provider.tsx | v4.0.0 | 上下文提供者 | ✅ 核心 |
-| ThemeToggle | components/theme-toggle.tsx | v5.3.2 | UI 组件 | ✅ 核心 |
-| JokeCard | components/joke-card.tsx | v4.0.0 | UI 组件 | ✅ 核心 |
-| NavigationControls | components/navigation-controls.tsx | v5.8.0 | UI 组件 | ✅ 核心 |
+| Page | app/page.tsx | v5.9.0 | 页面组件 | ✅ 核心 |
+| ThemeProvider | app/components/theme-provider.tsx | v4.0.0 | 上下文提供者 | ✅ 核心 |
+| ThemeToggle | app/components/theme-toggle.tsx | v5.3.2 | UI 组件 | ✅ 核心 |
+| JokeCard | app/components/joke-card.tsx | v4.0.0 | UI 组件 | ✅ 核心 |
+| NavigationControls | app/components/navigation-controls.tsx | v5.8.0 | UI 组件 | ✅ 核心 |
 
 ## 3. Page 组件 (主页面)
 
@@ -22,7 +22,7 @@
 |-----|-----|
 | 文件路径 | app/page.tsx |
 | 组件名 | Page |
-| 版本 | v5.8.0 |
+| 版本 | v5.9.0 |
 | 类型 | 客户端组件 (`"use client"`) |
 | 导出方式 | 默认导出 |
 | 依赖 | React、Motion、Lucide React、JOKES_DATA |
@@ -250,7 +250,7 @@ export default function RootLayout({ children }) {
 
 | 属性 | 值 |
 |-----|-----|
-| 文件路径 | components/theme-provider.tsx |
+| 文件路径 | app/components/theme-provider.tsx |
 | 组件名 | ThemeProvider |
 | 版本 | v4.0.0 |
 | 类型 | 客户端组件 |
@@ -293,7 +293,7 @@ export function ThemeProvider({ children, ...props }: React.ComponentProps<typeo
 
 ```tsx
 // 在 app/layout.tsx 中
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/app/components/theme-provider";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -321,7 +321,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 | 属性 | 值 |
 |-----|-----|
-| 文件路径 | components/theme-toggle.tsx |
+| 文件路径 | app/components/theme-toggle.tsx |
 | 组件名 | ThemeToggle |
 | 版本 | v5.3.2 |
 | 类型 | 客户端组件 |
@@ -390,7 +390,7 @@ if (!mounted) {
 ### 5.7 使用示例
 
 ```tsx
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeToggle } from "@/app/components/theme-toggle";
 
 export default function Header() {
   return (
@@ -412,12 +412,12 @@ export default function Header() {
 
 | 属性 | 值 |
 |-----|-----|
-| 文件路径 | components/joke-card.tsx |
+| 文件路径 | app/components/joke-card.tsx |
 | 组件名 | JokeCard |
 | 版本 | v4.0.0 |
 | 类型 | 客户端组件 |
 | 导出方式 | 命名导出 |
-| 状态 | 备用组件（当前未使用） |
+| 状态 | ✅ 核心组件 |
 
 ### 6.2 接口定义
 
@@ -491,8 +491,8 @@ const handleCopy = async () => {
 ### 6.7 使用示例
 
 ```tsx
-import { JokeCard } from "@/components/joke-card";
-import { JOKES_DATA } from "@/lib/jokes-data";
+import { JokeCard } from "@/app/components/joke-card";
+import { JOKES_DATA } from "@/app/lib/jokes-data";
 
 export default function JokesList() {
   return (
@@ -513,7 +513,7 @@ export default function JokesList() {
 
 | 属性 | 值 |
 |-----|-----|
-| 文件路径 | components/navigation-controls.tsx |
+| 文件路径 | app/components/navigation-controls.tsx |
 | 组件名 | NavigationControls |
 | 版本 | v5.8.0 |
 | 类型 | 客户端组件 |
@@ -641,7 +641,7 @@ const handleShare = async () => {
 ### 7.7 使用示例
 
 ```tsx
-import { NavigationControls } from "@/components/navigation-controls";
+import { NavigationControls } from "@/app/components/navigation-controls";
 
 export default function JokeViewer() {
   const handleRandom = () => console.log('Random clicked');
@@ -682,8 +682,7 @@ export default function JokeViewer() {
 #### 9.2.1 文件命名
 
 - 组件文件：PascalCase（如 ThemeToggle.tsx）
-- Hook 文件：camelCase（如 use-mobile.ts）
-- 工具文件：camelCase（如 utils.ts）
+- Hook 文件：camelCase（如 use-favorites.ts）
 - 数据文件：kebab-case（如 jokes-data.ts）
 
 #### 9.2.2 组件命名
@@ -708,7 +707,7 @@ export default function JokeViewer() {
 每个组件文件的顶部应包含版本注释：
 
 ```typescript
-// components/theme-toggle.tsx v5.3.2
+// app/components/theme-toggle.tsx v5.3.2
 ```
 
 版本升级规则：

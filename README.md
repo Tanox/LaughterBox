@@ -42,16 +42,16 @@
 ├── app/              # Next.js App Router 目录
 │   ├── layout.tsx    # 根布局组件
 │   ├── page.tsx      # 主页面组件
-│   └── globals.css   # 全局样式
-├── components/       # React 组件
-│   ├── joke-card.tsx           # 笑话卡片组件
-│   ├── navigation-controls.tsx # 导航控制组件
-│   ├── theme-provider.tsx      # 主题提供者
-│   └── theme-toggle.tsx        # 主题切换按钮
-├── hooks/            # 自定义 React Hooks
-│   └── use-favorites.ts # 收藏功能 Hook
-├── lib/              # 工具函数和数据
-│   └── jokes-data.ts # 笑话数据源
+│   ├── globals.css   # 全局样式
+│   ├── components/   # React 组件
+│   │   ├── joke-card.tsx           # 笑话卡片组件
+│   │   ├── navigation-controls.tsx # 导航控制组件
+│   │   ├── theme-provider.tsx      # 主题提供者
+│   │   └── theme-toggle.tsx        # 主题切换按钮
+│   ├── hooks/        # 自定义 React Hooks
+│   │   └── use-favorites.ts        # 收藏功能 Hook
+│   └── lib/          # 工具函数和数据
+│       └── jokes-data.ts           # 笑话数据源
 ├── openspec/         # OpenSpec 规范文档
 ├── prototype/        # 原型设计目录
 │   ├── prototype.html          # 高保真原型（124条笑话）
