@@ -89,7 +89,7 @@
 - 初始加载时，延迟随机选择笑话（避免水合错误）
 - 随机切换时确保与当前笑话不同
 - 笑话文本居中显示，使用大字号衬线字体
-- 显示当前笑话索引和总数（格式：`001 / 124`）
+- 显示当前笑话索引和总数（格式：`001 / 1008`）
 
 **边界条件**：
 - 笑话数据为空：显示"暂无笑话"提示
@@ -176,7 +176,7 @@
 │   ├── hooks/                  # 自定义 React Hooks
 │   │   └── use-favorites.ts        # 收藏功能 Hook
 │   └── lib/                    # 工具函数和数据
-│       └── jokes-data.ts           # 笑话数据源（124 条笑话）
+│       └── jokes-data.ts           # 笑话数据源（1008 条笑话）
 │
 ├── openspec/                     # OpenSpec 规范文档
 │   ├── README.md               # 规范文档索引
@@ -187,7 +187,8 @@
 │   └── DEPLOYMENT.md           # 部署指南
 │
 ├── prototype/                    # 原型设计目录
-│   ├── prototype.html          # 高保真原型（124条笑话）
+│   ├── prototype.html          # 高保真原型（1008条笑话）
+│   ├── DESIGN_SYSTEM.md        # 设计系统规范
 │   └── DESIGN_REVIEW.md        # 设计审查报告
 │
 ├── public/                       # 静态资源目录
@@ -268,6 +269,7 @@
 
 - [项目 README](../README.md)
 - [CHANGELOG](../CHANGELOG.md)
+- [设计系统规范](../prototype/DESIGN_SYSTEM.md)
 - [设计审查报告](../prototype/DESIGN_REVIEW.md)
 - [高保真原型](../prototype/prototype.html)
 
