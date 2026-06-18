@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'motion/react'
+import React from 'react'
 
 interface JokeCardProps {
   joke: string
@@ -10,7 +11,7 @@ interface JokeCardProps {
   onDragEnd?: (offset: { x: number; y: number }) => void
 }
 
-export function JokeCard({ joke, index, total, direction, onDragEnd }: JokeCardProps) {
+export const JokeCard = React.memo(function JokeCard({ joke, index, total, direction, onDragEnd }: JokeCardProps) {
   return (
     <motion.div
       id={`joke-card-${index}`}
@@ -70,4 +71,4 @@ export function JokeCard({ joke, index, total, direction, onDragEnd }: JokeCardP
       </div>
     </motion.div>
   )
-}
+})

@@ -1,4 +1,4 @@
-// lib/jokes-data.ts v5.0.0
+// lib/jokes-data.ts v5.9.0
 
 export const JOKES_DATA: string[] = [
   "为什么企鹅只有肚子是白的？因为手短洗不到后背。",
@@ -1010,3 +1010,7 @@ export const JOKES_DATA: string[] = [
   "我问妈妈：‘我从哪里来的？’妈妈说：‘你是充话费送的。’我当时就哭了，原来我这么便宜。",
   "为什么太阳总是东升西落？因为它想每天都看看这个美丽的世界，顺便晒晒太阳。",
 ];
+
+// Deduplicated version - removes exact duplicate jokes
+// This ensures favorites work correctly (one joke = one favorite)
+export const JOKES_DATA_DEDUPED: string[] = [...new Set(JOKES_DATA)];

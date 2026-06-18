@@ -5,13 +5,13 @@ import { AnimatePresence } from 'motion/react'
 import { ThemeToggle } from '@/app/components/theme-toggle'
 import { JokeCard } from '@/app/components/joke-card'
 import { NavigationControls } from '@/app/components/navigation-controls'
-import { JOKES_DATA } from '@/app/lib/jokes-data'
+import { JOKES_DATA_DEDUPED } from '@/app/lib/jokes-data'
 import { useFavorites } from '@/app/hooks/use-favorites'
 
 // app/page.tsx v5.9.0
 
 export default function Page() {
-  const [jokes] = useState<string[]>(JOKES_DATA)
+  const [jokes] = useState<string[]>(JOKES_DATA_DEDUPED)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [mounted, setMounted] = useState(false)
   const [direction, setDirection] = useState(0)
@@ -21,8 +21,8 @@ export default function Page() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setMounted(true)
-      if (JOKES_DATA.length > 0) {
-        setCurrentIndex(Math.floor(Math.random() * JOKES_DATA.length))
+      if (JOKES_DATA_DEDUPED.length > 0) {
+        setCurrentIndex(Math.floor(Math.random() * JOKES_DATA_DEDUPED.length))
       }
     }, 0)
     return () => clearTimeout(timer)
@@ -102,7 +102,7 @@ export default function Page() {
       <main id="main-content" className="flex flex-1 flex-col items-center justify-center px-4 py-6 md:px-12 lg:px-24 overflow-hidden">
         <div id="joke-viewer-container" className="relative w-full max-w-3xl lg:max-w-4xl">
           <AnimatePresence mode="wait" custom={direction}>
-            {isReady && jokes.length > 0 && (
+            {isReady && jokes.length > 0 ? (
               <JokeCard
                 joke={jokes[currentIndex]}
                 index={currentIndex}
@@ -110,13 +110,12 @@ export default function Page() {
                 direction={direction}
                 onDragEnd={handleDragEnd}
               />
-            )}
-            {!isReady && (
+            ) : (
               <div className="flex min-h-[350px] flex-col justify-center rounded-3xl bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:bg-neutral-900 sm:p-12 md:min-h-[450px] md:p-16 lg:p-20">
                 <div className="h-12 w-3/4 animate-pulse self-center rounded-lg bg-neutral-100 dark:bg-neutral-800" />
               </div>
             )}
-          </AnimatePresence>
+            </AnimatePresence>
 
           {isReady && jokes.length > 0 && (
             <NavigationControls

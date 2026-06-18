@@ -1,7 +1,8 @@
 'use client'
 
 import { Shuffle, Heart, Share2, Copy, ChevronLeft, ChevronRight, Play, Pause, Check } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import React from 'react'
 
 interface NavigationControlsProps {
   onRandom: () => void
@@ -14,7 +15,7 @@ interface NavigationControlsProps {
   onToggleAutoPlay: () => void
 }
 
-export function NavigationControls({ 
+export const NavigationControls = React.memo(function NavigationControls({
   onRandom, 
   onPrev, 
   onNext, 
@@ -26,6 +27,7 @@ export function NavigationControls({
 }: NavigationControlsProps) {
   const [copied, setCopied] = useState(false)
   const [showToast, setShowToast] = useState(false)
+  const [showError, setShowError] = useState(false)
   const [heartAnimating, setHeartAnimating] = useState(false)
 
   const handleCopy = async () => {
@@ -33,12 +35,16 @@ export function NavigationControls({
       await navigator.clipboard.writeText(jokeText)
       setCopied(true)
       setShowToast(true)
+      setShowError(false)
       setTimeout(() => {
         setCopied(false)
         setShowToast(false)
       }, 2000)
     } catch (e) {
-      console.error('Failed to copy', e)
+      // Clipboard API failed - show error feedback
+      console.error('Failed to copy to clipboard:', e)
+      setShowError(true)
+      setTimeout(() => setShowError(false), 2000)
     }
   }
 
@@ -149,7 +155,7 @@ export function NavigationControls({
         </div>
       </div>
 
-      {/* Toast notification */}
+      {/* Toast notification - success */}
       <div 
         className={`fixed top-8 left-1/2 -translate-x-1/2 translate-y-[-100px] bg-green-500 text-white px-6 py-3 rounded-full text-sm font-medium shadow-[0_8px_24px_rgba(34,197,94,0.4)] opacity-0 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] flex items-center gap-2 pointer-events-none z-50 ${showToast ? 'show' : ''}`}
         id="copied-toast"
@@ -157,6 +163,14 @@ export function NavigationControls({
         <Check className="h-4 w-4" />
         已复制到剪贴板
       </div>
+
+      {/* Toast notification - error */}
+      <div 
+        className={`fixed top-8 left-1/2 -translate-x-1/2 translate-y-[-100px] bg-red-500 text-white px-6 py-3 rounded-full text-sm font-medium shadow-[0_8px_24px_rgba(239,68,68,0.4)] opacity-0 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] flex items-center gap-2 pointer-events-none z-50 ${showError ? 'show' : ''}`}
+        id="error-toast"
+      >
+        <span>复制失败，请重试</span>
+      </div>
     </>
   )
-}
+})

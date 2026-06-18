@@ -4,37 +4,31 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 
 const FAVORITES_KEY = 'laughterbox-favorites'
 
+// Helper to load favorites from localStorage
+function loadFavorites(): number[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const saved = localStorage.getItem(FAVORITES_KEY)
+    if (saved) {
+      return JSON.parse(saved)
+    }
+  } catch (e) {
+    console.error('Failed to load favorites', e)
+  }
+  return []
+}
+
 export function useFavorites() {
-  const [favorites, setFavorites] = useState<number[]>(() => {
-    // Try to load from localStorage during initialization
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem(FAVORITES_KEY)
-      if (saved) {
-        try {
-          return JSON.parse(saved)
-        } catch (e) {
-          console.error('Failed to load favorites', e)
-        }
-      }
-    }
-    return []
-  })
-  const [isLoaded, setIsLoaded] = useState(false)
-  const firstRender = useRef(true)
+  const [favorites, setFavorites] = useState<number[]>(loadFavorites)
+  const isFirstRender = useRef(true)
 
+  // Save favorites to localStorage whenever they change (skip first render)
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoaded(true)
-    }, 0)
-    return () => clearTimeout(timer)
-  }, [])
-
-  // Save favorites to localStorage
-  useEffect(() => {
-    if (!firstRender.current) {
-      localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites))
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
     }
-    firstRender.current = false
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites))
   }, [favorites])
 
   const toggleFavorite = useCallback((index: number) => {
@@ -51,10 +45,12 @@ export function useFavorites() {
     return favorites.includes(index)
   }, [favorites])
 
+  // Since favorites are loaded synchronously via useState initializer,
+  // they are always available before first render
   return {
     favorites,
     toggleFavorite,
     isFavorite,
-    isLoaded
+    isLoaded: true
   }
 }
