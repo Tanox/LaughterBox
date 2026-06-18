@@ -9,10 +9,10 @@
 | 组件名 | 文件名 | 版本 | 类型 | 状态 |
 |-------|-------|------|------|------|
 | Page | app/page.tsx | v5.9.0 | 页面组件 | ✅ 核心 |
-| ThemeProvider | components/theme-provider.tsx | v4.0.0 | 上下文提供者 | ✅ 核心 |
-| ThemeToggle | components/theme-toggle.tsx | v5.3.2 | UI 组件 | ✅ 核心 |
-| JokeCard | components/joke-card.tsx | v5.8.0 | UI 组件 | ✅ 核心 |
-| NavigationControls | components/navigation-controls.tsx | v5.8.0 | UI 组件 | ✅ 核心 |
+| ThemeProvider | app/components/theme-provider.tsx | v4.0.0 | 上下文提供者 | ✅ 核心 |
+| ThemeToggle | app/components/theme-toggle.tsx | v5.3.2 | UI 组件 | ✅ 核心 |
+| JokeCard | app/components/joke-card.tsx | v4.0.0 | UI 组件 | ✅ 核心 |
+| NavigationControls | app/components/navigation-controls.tsx | v5.8.0 | UI 组件 | ✅ 核心 |
 
 ## 3. Page 组件 (主页面)
 
@@ -119,9 +119,11 @@ useEffect(() => {
   {/* 导航栏 */}
   <header id="main-header">
     <div id="header-content">
-      {/* 品牌标识 */}
+      {/* 品牌标识 - 自定义 SVG 星形图案 */}
       <div id="brand-logo">
-        <Sparkles />
+        <svg className="star-icon">
+          {/* 星形图案 SVG */}
+        </svg>
         <h1>LaughterBox</h1>
       </div>
       {/* 主题切换按钮 */}
@@ -151,8 +153,8 @@ useEffect(() => {
             exit="exit"
             transition={transition}
           >
-            {/* 装饰性引号 */}
-            <Quote className="rotate-180" />
+            {/* 装饰性引号 - 自定义 SVG */}
+            <svg className="quote-decoration rotate-180" />
             
             {/* 笑话文本 */}
             <p id="joke-text">
@@ -168,8 +170,8 @@ useEffect(() => {
               </div>
             )}
             
-            {/* 右下角装饰性引号 */}
-            <Quote className="opacity-10" />
+            {/* 右下角装饰性引号 - 自定义 SVG */}
+            <svg className="quote-decoration opacity-10" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -220,8 +222,8 @@ const variants = {
 
 ```typescript
 const transition = {
-  duration: 0.25,
-  ease: "easeInOut",
+  duration: 0.4,
+  ease: [0.34, 1.56, 0.64, 1], // 弹性缓和曲线
 };
 ```
 
@@ -250,7 +252,7 @@ export default function RootLayout({ children }) {
 
 | 属性 | 值 |
 |-----|-----|
-| 文件路径 | components/theme-provider.tsx |
+| 文件路径 | app/components/theme-provider.tsx |
 | 组件名 | ThemeProvider |
 | 版本 | v4.0.0 |
 | 类型 | 客户端组件 |
@@ -293,7 +295,7 @@ export function ThemeProvider({ children, ...props }: React.ComponentProps<typeo
 
 ```tsx
 // 在 app/layout.tsx 中
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/app/components/theme-provider";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -321,7 +323,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 | 属性 | 值 |
 |-----|-----|
-| 文件路径 | components/theme-toggle.tsx |
+| 文件路径 | app/components/theme-toggle.tsx |
 | 组件名 | ThemeToggle |
 | 版本 | v5.3.2 |
 | 类型 | 客户端组件 |
@@ -390,7 +392,7 @@ if (!mounted) {
 ### 5.7 使用示例
 
 ```tsx
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeToggle } from "@/app/components/theme-toggle";
 
 export default function Header() {
   return (
@@ -412,12 +414,12 @@ export default function Header() {
 
 | 属性 | 值 |
 |-----|-----|
-| 文件路径 | components/joke-card.tsx |
+| 文件路径 | app/components/joke-card.tsx |
 | 组件名 | JokeCard |
 | 版本 | v4.0.0 |
 | 类型 | 客户端组件 |
 | 导出方式 | 命名导出 |
-| 状态 | 备用组件（当前未使用） |
+| 状态 | ✅ 核心组件 |
 
 ### 6.2 接口定义
 
@@ -491,8 +493,8 @@ const handleCopy = async () => {
 ### 6.7 使用示例
 
 ```tsx
-import { JokeCard } from "@/components/joke-card";
-import { JOKES_DATA } from "@/lib/jokes-data";
+import { JokeCard } from "@/app/components/joke-card";
+import { JOKES_DATA } from "@/app/lib/jokes-data";
 
 export default function JokesList() {
   return (
@@ -513,7 +515,7 @@ export default function JokesList() {
 
 | 属性 | 值 |
 |-----|-----|
-| 文件路径 | components/navigation-controls.tsx |
+| 文件路径 | app/components/navigation-controls.tsx |
 | 组件名 | NavigationControls |
 | 版本 | v5.8.0 |
 | 类型 | 客户端组件 |
@@ -559,27 +561,47 @@ export function NavigationControls({
 | autoPlay | boolean | 是 | 是否启用自动播放 |
 | onToggleAutoPlay | () => void | 是 | 切换自动播放状态的回调函数 |
 
-### 7.4 状态管理
+### 7.3 状态管理
 
 | 状态名 | 类型 | 初始值 | 用途 |
 |-------|------|-------|------|
 | copied | boolean | false | 复制成功提示 |
+| showToast | boolean | false | Toast 通知显示状态 |
+| heartAnimating | boolean | false | 收藏心跳动画触发 |
 
 ### 7.5 核心功能
 
 #### handleCopy()
 
-将当前笑话文本复制到剪贴板。
+将当前笑话文本复制到剪贴板并显示 Toast 通知。
 
 ```typescript
 const handleCopy = async () => {
   try {
     await navigator.clipboard.writeText(jokeText);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setShowToast(true);
+    setTimeout(() => {
+      setCopied(false);
+      setShowToast(false);
+    }, 2000);
   } catch (e) {
     console.error('Failed to copy', e);
   }
+};
+```
+
+#### handleToggleFavorite()
+
+切换收藏状态，触发心跳动画。
+
+```typescript
+const handleToggleFavorite = () => {
+  if (!isFavorite) {
+    setHeartAnimating(true);
+    setTimeout(() => setHeartAnimating(false), 500);
+  }
+  onToggleFavorite();
 };
 ```
 
@@ -625,23 +647,29 @@ const handleShare = async () => {
     <button id="btn-autoplay" onClick={onToggleAutoPlay} aria-label={autoPlay ? '暂停自动播放' : '开始自动播放'}>
       {autoPlay ? <Pause /> : <Play />}
     </button>
-    <button id="btn-favorite" onClick={onToggleFavorite} aria-label={isFavorite ? '取消收藏' : '收藏'}>
-      <Heart className={isFavorite ? 'fill-current' : ''} />
+    <button id="btn-favorite" onClick={handleToggleFavorite} aria-label={isFavorite ? '取消收藏' : '收藏'}>
+      <Heart className={isFavorite ? 'fill-current animate-heartBeat' : ''} />
     </button>
     <button id="btn-copy" onClick={handleCopy} aria-label="复制">
-      {copied ? <span className="text-sm font-medium text-green-500">✓</span> : <Copy />}
+      {copied ? <Check /> : <Copy />}
     </button>
     <button id="btn-share" onClick={handleShare} aria-label="分享">
       <Share2 />
     </button>
   </div>
 </div>
+
+{/* Toast 通知 */}
+<div id="copied-toast" className="fixed top-8 left-1/2 -translate-x-1/2 ...">
+  <Check />
+  已复制到剪贴板
+</div>
 ```
 
 ### 7.7 使用示例
 
 ```tsx
-import { NavigationControls } from "@/components/navigation-controls";
+import { NavigationControls } from "@/app/components/navigation-controls";
 
 export default function JokeViewer() {
   const handleRandom = () => console.log('Random clicked');
@@ -707,7 +735,7 @@ export default function JokeViewer() {
 每个组件文件的顶部应包含版本注释：
 
 ```typescript
-// components/theme-toggle.tsx v5.3.2
+// app/components/theme-toggle.tsx v5.3.2
 ```
 
 版本升级规则：
@@ -721,12 +749,11 @@ export default function JokeViewer() {
 
 ### 10.1 图标库
 
-本项目使用 Lucide React 图标库：
+本项目使用 Lucide React 图标库和自定义 SVG：
 
 | 图标名 | 用途 |
 |-------|------|
-| Sparkles | 品牌标识 |
-| Quote | 笑话装饰引号 |
+| 星形图案 (自定义 SVG) | 品牌标识 |
 | Shuffle | 随机按钮 |
 | Sun | 浅色模式 |
 | Moon | 深色模式 |
@@ -738,6 +765,8 @@ export default function JokeViewer() {
 | ChevronLeft | 上一个 |
 | ChevronRight | 下一个 |
 | Heart | 收藏 |
+
+**注意**：引号装饰使用自定义 SVG，不依赖 Lucide React。
 
 ### 10.2 相关资源
 

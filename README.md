@@ -17,7 +17,7 @@
 
 ## 高保真原型
 项目包含独立的高保真 HTML 原型，可以直接在浏览器中打开：
-- 打开 `prototype.html` 查看原型
+- 打开 [prototype/prototype.html](prototype/prototype.html) 查看原型
 - 包含所有交互功能：笑话切换、收藏、分享、自动播放等
 - 支持深色/浅色模式切换
 - 响应式设计，适配各种设备
@@ -42,28 +42,31 @@
 ├── app/              # Next.js App Router 目录
 │   ├── layout.tsx    # 根布局组件
 │   ├── page.tsx      # 主页面组件
-│   └── globals.css   # 全局样式
-├── components/       # React 组件
-│   ├── joke-card.tsx           # 笑话卡片组件
-│   ├── navigation-controls.tsx # 导航控制组件
-│   ├── theme-provider.tsx      # 主题提供者
-│   └── theme-toggle.tsx        # 主题切换按钮
-├── hooks/            # 自定义 React Hooks
-│   └── use-favorites.ts # 收藏功能 Hook
-├── lib/              # 工具函数和数据
-│   └── jokes-data.ts # 笑话数据源
+│   ├── globals.css   # 全局样式
+│   ├── components/   # React 组件
+│   │   ├── joke-card.tsx           # 笑话卡片组件
+│   │   ├── navigation-controls.tsx # 导航控制组件
+│   │   ├── theme-provider.tsx      # 主题提供者
+│   │   └── theme-toggle.tsx        # 主题切换按钮
+│   ├── hooks/        # 自定义 React Hooks
+│   │   └── use-favorites.ts        # 收藏功能 Hook
+│   └── lib/          # 工具函数和数据
+│       └── jokes-data.ts           # 笑话数据源
 ├── openspec/         # OpenSpec 规范文档
-├── prototype.html    # 高保真原型
-└── DESIGN_REVIEW.md  # 设计审查报告
+├── prototype/        # 原型设计目录
+│   ├── prototype.html          # 高保真原型（1008条笑话）
+│   └── DESIGN_REVIEW.md        # 设计审查报告
+└── package.json      # 项目配置
 ```
 
 ## 设计资源
-- [设计审查报告](DESIGN_REVIEW.md) - 设计师视角的改进建议
+- [设计审查报告](prototype/DESIGN_REVIEW.md) - 设计师视角的改进建议
+- [高保真原型](prototype/prototype.html) - 独立 HTML 原型
 - [OpenSpec 规范](openspec/spec.md) - 项目详细技术规范
 
 ## 版本信息
 - 当前版本：v5.9.0
-- 笑话数量：124 条
+- 笑话数量：1008 条
 
 ## 许可证
 MIT License

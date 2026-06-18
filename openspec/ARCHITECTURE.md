@@ -38,13 +38,16 @@
 │  │  - useCallback (handleRandom, handleNext)     │   │
 │  │  - useEffect (初始化逻辑)                      │   │
 │  └─────────────────────────────────────────────────┘   │
+│  ┌──────────────────┐                                   │
+│  │ use-favorites.ts │ (收藏功能 Hook)                   │
+│  └──────────────────┘                                   │
 └─────────────────────────────────────────────────────────┘
                             ↓
 ┌─────────────────────────────────────────────────────────┐
 │                     数据层                                │
 │  ┌─────────────────────────────────────────────────┐   │
-│  │            lib/jokes-data.ts (静态数据)         │   │
-│  │            124 条笑话                           │   │
+│  │            app/lib/jokes-data.ts (静态数据)         │   │
+│  │            1008 条笑话                                │   │
 │  └─────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────┘
                             ↓
@@ -83,17 +86,17 @@
 
 ```
 RootLayout (app/layout.tsx)
-├── ThemeProvider (components/theme-provider.tsx)
+├── ThemeProvider (app/components/theme-provider.tsx)
 │   └── Page (app/page.tsx)
 │       ├── header (导航栏)
-│       │   ├── Sparkles 图标 (品牌标识)
+│       │   ├── 自定义 SVG 星形图案 (品牌标识)
 │       │   ├── h1 (标题)
 │       │   └── ThemeToggle (主题切换按钮)
 │       └── main (主内容区)
 │           ├── div (笑话查看器容器)
 │           │   ├── AnimatePresence
 │           │   │   └── motion.div (笑话卡片)
-│           │   │       ├── Quote (左上角装饰)
+│           │   │       ├── 自定义 SVG 引号 (左上角装饰)
 │           │   │       ├── p (笑话文本)
 │           │   │       └── div (索引指示器)
 │           │   └── div (导航控制)
@@ -108,10 +111,9 @@ RootLayout (app/layout.tsx)
 |-----|------|------|------|
 | RootLayout | app/layout.tsx | 根布局、主题提供者、字体配置 | 服务端组件 |
 | Page | app/page.tsx | 主页面、状态管理、核心业务逻辑、动画处理 | 客户端组件 |
-| ThemeProvider | components/theme-provider.tsx | 主题上下文提供者、封装 next-themes | 客户端组件 |
-| ThemeToggle | components/theme-toggle.tsx | 主题切换 UI、图标动画 | 客户端组件 |
-| JokeCard | components/joke-card.tsx | 笑话卡片展示、拖拽导航 | 客户端组件 |
-| NavigationControls | components/navigation-controls.tsx | 导航控制按钮（随机、上一个、下一个等） | 客户端组件 |
+| ThemeProvider | app/components/theme-provider.tsx | 主题上下文提供者、封装 next-themes | 客户端组件 |
+| ThemeToggle | app/components/theme-toggle.tsx | 主题切换 UI、图标动画 | 客户端组件 |
+| JokeCard | app/components/joke-card.tsx | 笑话卡片展示 | 客户端组件 |
 
 ## 4. 状态管理
 
@@ -185,7 +187,7 @@ setCurrentIndex 更新索引
 
 ```
 ┌─────────────────┐
-│  JOKES_DATA     │ (lib/jokes-data.ts 静态数据)
+│  JOKES_DATA     │ (app/lib/jokes-data.ts 静态数据)
 └────────┬────────┘
          ↓
 ┌─────────────────┐
@@ -270,10 +272,10 @@ const variants = {
     y: dir === 0 ? -10 : 0,
   }),
 };
-
+```typescript
 const transition = {
-  duration: 0.25,
-  ease: "easeInOut",
+  duration: 0.4,
+  ease: [0.34, 1.56, 0.64, 1], // 弹性缓和曲线
 };
 ```
 

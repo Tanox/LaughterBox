@@ -2,17 +2,16 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { AnimatePresence } from 'motion/react'
-import { Sparkles } from 'lucide-react'
-import { ThemeToggle } from '@/components/theme-toggle'
-import { JokeCard } from '@/components/joke-card'
-import { NavigationControls } from '@/components/navigation-controls'
-import { JOKES_DATA } from '@/lib/jokes-data'
-import { useFavorites } from '@/hooks/use-favorites'
+import { ThemeToggle } from '@/app/components/theme-toggle'
+import { JokeCard } from '@/app/components/joke-card'
+import { NavigationControls } from '@/app/components/navigation-controls'
+import { JOKES_DATA_DEDUPED } from '@/app/lib/jokes-data'
+import { useFavorites } from '@/app/hooks/use-favorites'
 
 // app/page.tsx v5.9.0
 
 export default function Page() {
-  const [jokes] = useState<string[]>(JOKES_DATA)
+  const [jokes] = useState<string[]>(JOKES_DATA_DEDUPED)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [mounted, setMounted] = useState(false)
   const [direction, setDirection] = useState(0)
@@ -22,8 +21,8 @@ export default function Page() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setMounted(true)
-      if (JOKES_DATA.length > 0) {
-        setCurrentIndex(Math.floor(Math.random() * JOKES_DATA.length))
+      if (JOKES_DATA_DEDUPED.length > 0) {
+        setCurrentIndex(Math.floor(Math.random() * JOKES_DATA_DEDUPED.length))
       }
     }, 0)
     return () => clearTimeout(timer)
@@ -85,8 +84,14 @@ export default function Page() {
       <header id="main-header" className="sticky top-0 z-10 border-b border-neutral-200/50 bg-white/90 backdrop-blur-sm dark:border-neutral-800/50 dark:bg-neutral-950/90">
         <div id="header-content" className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 md:px-8 md:py-3">
           <div id="brand-logo" className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-neutral-900 dark:text-neutral-50 md:h-6 md:w-6" />
-            <h1 className="text-lg font-bold dark:text-neutral-50 md:text-xl">LaughterBox</h1>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 text-neutral-900 dark:text-neutral-50 md:h-6 md:w-6">
+              <path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z"/>
+              <path d="M5 3l2 4"/>
+              <path d="M19 3l-2 4"/>
+              <path d="M5 21l2 4"/>
+              <path d="M19 21l-2 4"/>
+            </svg>
+            <h1 className="text-lg font-semibold dark:text-neutral-50 md:text-xl">LaughterBox</h1>
           </div>
           <div id="header-actions" className="flex items-center gap-3 md:gap-4">
             <ThemeToggle />
@@ -97,7 +102,7 @@ export default function Page() {
       <main id="main-content" className="flex flex-1 flex-col items-center justify-center px-4 py-6 md:px-12 lg:px-24 overflow-hidden">
         <div id="joke-viewer-container" className="relative w-full max-w-3xl lg:max-w-4xl">
           <AnimatePresence mode="wait" custom={direction}>
-            {isReady && jokes.length > 0 && (
+            {isReady && jokes.length > 0 ? (
               <JokeCard
                 joke={jokes[currentIndex]}
                 index={currentIndex}
@@ -105,13 +110,12 @@ export default function Page() {
                 direction={direction}
                 onDragEnd={handleDragEnd}
               />
-            )}
-            {!isReady && (
-              <div className="flex min-h-[350px] flex-col justify-center rounded-3xl bg-white p-8 shadow-sm dark:bg-neutral-900 sm:p-12 md:min-h-[450px] md:p-16 lg:p-20">
+            ) : (
+              <div className="flex min-h-[350px] flex-col justify-center rounded-3xl bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:bg-neutral-900 sm:p-12 md:min-h-[450px] md:p-16 lg:p-20">
                 <div className="h-12 w-3/4 animate-pulse self-center rounded-lg bg-neutral-100 dark:bg-neutral-800" />
               </div>
             )}
-          </AnimatePresence>
+            </AnimatePresence>
 
           {isReady && jokes.length > 0 && (
             <NavigationControls
