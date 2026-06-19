@@ -8,8 +8,6 @@ import { NavigationControls } from '@/app/components/navigation-controls'
 import { JOKES_DATA_DEDUPED } from '@/app/lib/jokes-data'
 import { useFavorites } from '@/app/hooks/use-favorites'
 
-// app/page.tsx v5.9.0
-
 export default function Page() {
   const [jokes] = useState<string[]>(JOKES_DATA_DEDUPED)
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -21,27 +19,24 @@ export default function Page() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setMounted(true)
-      if (JOKES_DATA_DEDUPED.length > 0) {
-        setCurrentIndex(Math.floor(Math.random() * JOKES_DATA_DEDUPED.length))
+      if (jokes.length > 0) {
+        setCurrentIndex(Math.floor(Math.random() * jokes.length))
       }
     }, 0)
     return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null
-    
+    let interval: ReturnType<typeof setInterval> | null = null
     if (autoPlay && jokes.length > 1) {
       interval = setInterval(() => {
         setDirection(1)
         setCurrentIndex(prev => (prev + 1) % jokes.length)
       }, 30000)
     }
-    
     return () => {
-      if (interval) {
-        clearInterval(interval)
-      }
+      if (interval) clearInterval(interval)
     }
   }, [autoPlay, jokes.length])
 
@@ -69,41 +64,89 @@ export default function Page() {
     setCurrentIndex(prev => (prev - 1 + jokes.length) % jokes.length)
   }, [jokes.length])
 
-  const handleDragEnd = useCallback((offset: { x: number }) => {
-    if (offset.x < -50) {
-      handleNext()
-    } else if (offset.x > 50) {
-      handlePrev()
+  const handleDragEnd = useCallback(
+    (offset: { x: number }) => {
+      if (offset.x < -50) {
+        handleNext()
+      } else if (offset.x > 50) {
+        handlePrev()
+      }
+    },
+    [handleNext, handlePrev]
+  )
+
+  // Keyboard shortcuts for accessibility
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (!mounted) return
+      const target = e.target as HTMLElement | null
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) {
+        return
+      }
+      if (e.key === 'ArrowRight') {
+        e.preventDefault()
+        handleNext()
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        handlePrev()
+      } else if (e.key === ' ' || e.key.toLowerCase() === 'r') {
+        e.preventDefault()
+        handleRandom()
+      }
     }
-  }, [handleNext, handlePrev])
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [mounted, handleNext, handlePrev, handleRandom])
 
   const isReady = mounted && favoritesLoaded
 
   return (
-    <div id="page-wrapper" className="flex min-h-screen flex-col bg-neutral-50 dark:bg-neutral-950 transition-colors duration-300">
-      <header id="main-header" className="sticky top-0 z-10 border-b border-neutral-200/50 bg-white/90 backdrop-blur-sm dark:border-neutral-800/50 dark:bg-neutral-950/90">
-        <div id="header-content" className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 md:px-8 md:py-3">
-          <div id="brand-logo" className="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 text-neutral-900 dark:text-neutral-50 md:h-6 md:w-6">
-              <path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z"/>
-              <path d="M5 3l2 4"/>
-              <path d="M19 3l-2 4"/>
-              <path d="M5 21l2 4"/>
-              <path d="M19 21l-2 4"/>
-            </svg>
-            <h1 className="text-lg font-semibold dark:text-neutral-50 md:text-xl">LaughterBox</h1>
+    <div
+      id="page-wrapper"
+      className="flex min-h-screen flex-col bg-background transition-colors duration-300"
+    >
+      {/* Header / brand */}
+      <header
+        id="main-header"
+        className="sticky top-0 z-10 border-b border-border/50 bg-background/90 backdrop-blur"
+      >
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-8">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 rounded-xl bg-primary text-primary-foreground flex items-center justify-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2.2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4"
+                aria-hidden="true"
+              >
+                <path d="M12 2l2.39 5.37L20 8l-4.2 3.73L17.5 18l-5.5-3.27L6.5 18 17.18 8 12 2z" />
+              </svg>
+            </div>
+            <div className="flex flex-col leading-tight">
+              <span className="text-sm font-semibold tracking-tight">LaughterBox</span>
+              <span className="text-[11px] text-muted-foreground hidden sm:block">
+                极简笑话收藏 · {jokes.length} 则
+              </span>
+            </div>
           </div>
-          <div id="header-actions" className="flex items-center gap-3 md:gap-4">
+          <div className="flex items-center gap-2">
             <ThemeToggle />
           </div>
         </div>
       </header>
 
-      <main id="main-content" className="flex flex-1 flex-col items-center justify-center px-4 py-6 md:px-12 lg:px-24 overflow-hidden">
-        <div id="joke-viewer-container" className="relative w-full max-w-3xl lg:max-w-4xl">
+      {/* Main content */}
+      <main className="flex flex-1 flex-col items-center justify-center px-4 py-6 md:px-12 lg:px-24 overflow-hidden">
+        <div className="relative w-full max-w-3xl lg:max-w-4xl">
           <AnimatePresence mode="wait" custom={direction}>
             {isReady && jokes.length > 0 ? (
               <JokeCard
+                key={currentIndex}
                 joke={jokes[currentIndex]}
                 index={currentIndex}
                 total={jokes.length}
@@ -111,11 +154,14 @@ export default function Page() {
                 onDragEnd={handleDragEnd}
               />
             ) : (
-              <div className="flex min-h-[350px] flex-col justify-center rounded-3xl bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:bg-neutral-900 sm:p-12 md:min-h-[450px] md:p-16 lg:p-20">
-                <div className="h-12 w-3/4 animate-pulse self-center rounded-lg bg-neutral-100 dark:bg-neutral-800" />
+              <div
+                aria-hidden="true"
+                className="flex min-h-[350px] flex-col justify-center rounded-3xl bg-card p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.20)] sm:p-12 md:min-h-[450px] md:p-16 lg:p-20"
+              >
+                <div className="h-12 w-3/4 animate-pulse self-center rounded-xl bg-muted dark:bg-neutral-800" />
               </div>
             )}
-            </AnimatePresence>
+          </AnimatePresence>
 
           {isReady && jokes.length > 0 && (
             <NavigationControls
@@ -131,6 +177,13 @@ export default function Page() {
           )}
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-border/50 py-4 text-center">
+        <p className="text-xs text-muted-foreground">
+          左右滑动或使用方向键切换 · 按空格随机
+        </p>
+      </footer>
     </div>
   )
 }
