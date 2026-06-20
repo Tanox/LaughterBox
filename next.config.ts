@@ -48,6 +48,8 @@ const nextConfig: NextConfig = {
   images: { unoptimized: true },
   ...(isDeployingToVercel || isDeployingToEdgeOne ? {} : { output: 'standalone' }),
   transpilePackages: ['motion'],
+  // 禁用 SWC minify 避免 motion v12 导致的 webpack-runtime prerender 错误
+  swcMinify: false,
   onDemandEntries: {
     maxInactiveAge: 25 * 1000,
     pagesBufferLength: 2,

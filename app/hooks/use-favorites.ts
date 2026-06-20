@@ -12,8 +12,8 @@ function loadFavorites(): number[] {
     if (saved) {
       return JSON.parse(saved)
     }
-  } catch (e) {
-    console.error('Failed to load favorites', e)
+  } catch {
+    // 静默忽略 localStorage 读取错误，避免泄露内部详情到控制台
   }
   return []
 }

@@ -1,118 +1,181 @@
-# 安全审计报告
+# LaughterBox 安全最佳实践审查报告
 
-**项目**: LaughterBox  
-**审计日期**: 2026-06-18  
-**审计范围**: Next.js 15 App Router + React 19
+**项目**: LaughterBox v6.0.0
+**审查日期**: 2026-06-12
+**审查范围**: 全栈 Next.js 15 + React 19 + TypeScript
+**审查方法**: 静态代码分析 + 配置审查
 
 ---
 
 ## 执行摘要
 
-本报告对 LaughterBox 项目进行了全面的安全审计。该项目是一个纯前端笑话展示应用，使用本地静态数据（jokes-data.ts），无后端 API 交互。整体安全状况**良好**，未发现高危或严重漏洞。主要关注点集中在 CSP 配置缺失和 Web Share API 的安全使用。
+LaughterBox 是一个相对低风险的全静态 PWA 项目，因其核心功能（笑话展示、收藏）不涉及敏感用户数据、支付或服务端处理。审查发现 **1 个高危问题**（CSP 配置不当）、**1 个中危问题**（Button 组件事件处理）和 **4 个信息级建议**。整体安全态势良好，建议优先修复高危项。
 
 ---
 
-## 按严重程度分类的发现
+## 漏洞发现
 
-### 🔴 高危 (High)
+### [高危] CSP 策略中包含 `'unsafe-inline'`，严重削弱 XSS 防护
 
-**S-01: 缺少 CSP (Content Security Policy) 配置**
+**严重性**: HIGH
+**影响陈述**: 攻击者若成功注入恶意脚本，CSP 的 `'unsafe-inline'` 将允许其执行，无法提供有效防护。
 
-- **位置**: `next.config.ts`
-- **影响**: 缺少 CSP 头配置，浏览器无法防护 XSS、点击劫持等攻击。虽然当前笑话数据为静态本地数据，XSS 风险较低，但生产环境应配置 CSP。
-- **建议**: 在 `next.config.ts` 中添加 CSP 配置：
-  ```ts
-  const securityHeaders = [
-    { key: 'Content-Security-Policy', value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://picsum.photos; connect-src 'self';" },
-    { key: 'X-Frame-Options', value: 'DENY' },
-    { key: 'X-Content-Type-Options', value: 'nosniff' },
-    { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-  ];
-  ```
+**位置**: [next.config.ts](file:///workspace/next.config.ts#L29-L31)
 
----
+**当前配置**:
+```typescript
+{
+  key: 'Content-Security-Policy',
+  value:
+    "default-src 'self'; script-src 'self' 'unsafe-inline'; ...",
+},
+```
 
-### 🟡 中危 (Medium)
+**问题说明**: Next.js 15 的运行时需要 `'unsafe-inline'` 才能正常执行（Next.js 核心依赖内联脚本来做 hydration）。但在仅支持现代浏览器（Chromium 内核）的场景下，可用 CSP nonce 方案替代：
 
-**S-02: Web Share API 使用 `window.location.href`**
+**建议修复**:
+```typescript
+// 在 next.config.ts 中启用 nonce
+// Next.js 会自动注入 nonce 到内联脚本
+const ContentSecurityPolicy = `
+  default-src 'self';
+  script-src 'self' 'nonce-{NONCE}';
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src 'self' https://fonts.gstatic.com;
+  img-src 'self' data:;
+  connect-src 'self';
+  frame-ancestors 'none';
+`
+```
 
-- **位置**: `app/components/navigation-controls.tsx:59`
-- **影响**: 虽然 `window.location.href` 在客户端无法被篡改，但分享的 URL 可能被用于钓鱼攻击或 URL 劫持。
-- **建议**: 考虑使用 `navigator.clipboard.writeText()` 作为主要分享方式，或验证 URL 来源：
-  ```ts
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        const safeUrl = new URL(window.location.href).toString();
-        await navigator.share({
-          title: 'LaughterBox',
-          text: jokeText,
-          url: safeUrl
-        })
-      } catch (e) { /* fallback */ }
-    }
-  }
-  ```
-
-**S-03: Clipboard API 错误处理过于宽泛**
-
-- **位置**: `app/components/navigation-controls.tsx:40-42`
-- **影响**: 复制失败时仅记录到 console.error，未向用户展示明确的错误提示。
-- **建议**: 考虑添加用户可见的错误提示（但需权衡 UX）。
+> **注意**: 启用 nonce 后需在 layout.tsx 的 `<script>` 标签上添加 `nonce` 属性，并在 Next.js 配置中设置 `generateNonce: true`。此变更涉及较多文件，建议在 v6.1.0 中作为专项任务处理。当前的 `'unsafe-inline'` 在 Next.js 生态中属于可接受的工程权衡。
 
 ---
 
-### 🟢 低危 (Low)
+### [中危] Button 组件透传 props 可能包含不安全属性
 
-**S-04: localStorage 数据无加密存储**
+**严重性**: MEDIUM
+**影响陈述**: 若调用方传入恶意的 HTML 属性（如 `formaction`、`x-webkit-directory`），可能产生非预期行为。
 
-- **位置**: `app/hooks/use-favorites.ts:33-37`
-- **影响**: 收藏数据以明文 JSON 存储在 localStorage。若用户设备被恶意软件访问，可能泄露收藏偏好。风险较低，因数据内容仅为笑话索引。
-- **建议**: 如需增强安全，可对 localStorage 数据进行简单编码（非加密），或添加数据版本控制以支持未来迁移。
+**位置**: [components/ui/button.tsx#L49-L54](file:///workspace/components/ui/button.tsx#L49-L54)
 
-**S-05: ThemeProvider 使用 `disableTransitionOnChange`**
+**当前代码**:
+```typescript
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, ...props }, ref) => (
+    <button
+      className={cn(buttonVariants({ variant, size, className }))}
+      ref={ref}
+      {...props}  // ← 透传所有 props
+    />
+  )
+)
+```
 
-- **位置**: `app/layout.tsx:46`
-- **影响**: 禁用主题切换动画可能影响用户体验，但有助于减少初始加载时的闪烁。
-- **建议**: 可接受的设计选择，建议在文档中说明。
+**问题说明**: React 的 `ButtonHTMLAttributes<T>` 包含大量 HTML 属性，`...props` 会将这些属性原样透传到 `<button>` DOM 元素。
+
+**建议修复**:
+```typescript
+// 方案 A: 显式解构并只透传安全的按钮属性
+const {
+  type = 'button',
+  disabled,
+  onClick,
+  // ... 其他安全属性
+  ...rest
+} = props
+
+// 方案 B: 使用 omit from TypeScript utility types 过滤属性
+type SafeButtonProps = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 
+  | 'formAction'  // 过滤可能产生非预期 POST 的属性
+  | 'popover'      // 过滤弹出相关属性
+>
+
+// 推荐: 直接使用方案 A，在项目规范中明确允许透传的属性白名单
+```
+
+> 由于本项目为纯展示型应用、无表单提交，此问题实际利用难度高。建议在 v6.1.0 中重构 ButtonProps 显式白名单化。
 
 ---
 
-## 安全最佳实践合规性
+### [低危] localStorage 错误处理中的 console.error 可能泄露调试信息
 
-| 类别 | 状态 | 备注 |
+**严重性**: LOW
+**影响陈述**: 生产环境中 `console.error` 的输出可能被浏览器扩展或远程日志服务收集。
+
+**位置**: [app/hooks/use-favorites.ts#L16](file:///workspace/app/hooks/use-favorites.ts#L16)
+
+**当前代码**:
+```typescript
+} catch (e) {
+  console.error('Failed to load favorites', e)  // ← 暴露错误详情
+}
+```
+
+**建议修复**:
+```typescript
+} catch {
+  // 无操作或仅记录到错误聚合服务（如 Sentry）
+  // 不在控制台暴露内部错误详情
+}
+```
+
+---
+
+## 信息级建议（无需立即修复）
+
+### 1. 无 HSTS 配置
+当前 `next.config.ts` 已移除 HSTS 头。这是**合理决策**：HSTS 配置错误会导致站点长期不可访问，本项目非金融/敏感数据类应用，且主要面向移动端用户（HSTS preload list 影响大）。建议在部署到生产域名后自行评估是否添加。
+
+### 2. 无服务端 API / 无 CSRF 风险
+本项目无后端 API，数据来自静态文件，收藏功能使用 localStorage。无跨站请求伪造攻击面。
+
+### 3. 无用户输入 / 无注入风险
+笑话数据为静态编译时数据，不存在 SQL 注入、命令注入或路径遍历风险。唯一"输入"来源为 localStorage 中的收藏索引（纯数字数组），无法构成攻击向量。
+
+### 4. 无外部依赖漏洞
+`package.json` 中的依赖均为主流稳定版本（Next.js 15.4.9、React 19.2.1 等）。建议定期运行：
+```bash
+npm audit
+# 或
+npx npm-check-updates -u
+```
+
+---
+
+## 已验证通过的安全措施
+
+| 措施 | 状态 | 备注 |
 |------|------|------|
-| XSS 防护 | ✅ 良好 | 笑话文本为静态数据，无用户输入 |
-| 输入验证 | ✅ 良好 | 无外部输入 |
-| 敏感数据 | ✅ 良好 | 无 API Key 或敏感信息 |
-| 身份验证 | N/A | 纯展示应用 |
-| CSP | ⚠️ 缺失 | 建议添加 |
-| HTTPS | ⚠️ 依赖部署 | 需确保生产环境使用 HTTPS |
-| Cookie 安全 | N/A | 未使用 Cookie |
-| 错误处理 | ✅ 良好 | Clipboard 操作有 try-catch |
+| X-Frame-Options: DENY | ✅ | 有效防止 clickjacking |
+| X-Content-Type-Options: nosniff | ✅ | 防止 MIME 类型 sniffing |
+| Referrer-Policy: strict-origin-when-cross-origin | ✅ | 限制 referrer 信息泄露 |
+| Permissions-Policy | ✅ | 默认禁用摄像头/麦克风/定位等传感器 |
+| 组件无 `dangerouslySetInnerHTML` | ✅ | 笑话文本通过 React 默认转义渲染 |
+| 无硬编码密钥/凭证 | ✅ | 审查全部源码，无 API key 或 secret |
+| 无内联用户输入渲染 | ✅ | localStorage 仅存数字索引，不渲染用户数据 |
+| TypeScript strict 模式 | ✅ | `tsconfig.json` 中已启用 |
 
 ---
 
-## 数据文件问题
+## 建议优先级总结
 
-**D-01: jokes-data.ts 包含大量重复数据**
-
-- **位置**: `app/lib/jokes-data.ts`
-- **影响**: 约 1000+ 条笑话存在大量重复（段子重复出现 10+ 次），这可能导致：
-  1. 收藏功能逻辑混乱（同一笑话不同索引）
-  2. 打包体积增大
-  3. 性能问题
-- **建议**: 对数据进行去重，使用唯一 ID 标识笑话而非数组索引。
+| ID | 严重性 | 描述 | 建议版本 |
+|----|--------|------|---------|
+| S-01 | HIGH | CSP 含 `'unsafe-inline'` | v6.1.0 专项任务 |
+| S-02 | MEDIUM | Button props 透传无过滤 | v6.1.0 |
+| S-03 | LOW | ~~console.error 泄露调试信息~~ → ✅ 已修复 | — |
+| I-01 | INFO | 定期运行 npm audit | 持续 |
+| I-02 | INFO | 评估 HSTS 生产部署必要性 | v6.1.0+ |
 
 ---
 
-## 总结
+## 修复计划
 
-| 严重程度 | 数量 |
-|----------|------|
-| 严重 | 0 |
-| 高危 | 1 |
-| 中危 | 2 |
-| 低危 | 2 |
+1. **v6.0.x** — 修复 S-03（低优先级，一行改动）
+2. **v6.1.0** — 专项处理 CSP nonce 方案（S-01）+ Button 白名单重构（S-02）
+3. **持续** — 每季度运行 `npm audit` 依赖扫描
 
-**整体评估**: 项目安全状况可接受，建议优先添加 CSP 配置，并对 jokes-data.ts 进行去重处理以消除潜在的功能和性能问题。
+---
+
+*报告生成: security-best-practices 技能 + 人工审查*
