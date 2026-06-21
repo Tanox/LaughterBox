@@ -1,5 +1,26 @@
 # CHANGELOG
 
+## [6.0.0] - 2026-06-12
+### Added
+- 初始化 shadcn/ui 组件库，添加 `components.json` + `lib/utils.ts` (cn 工具)。
+- 新增基础组件: `Button` (`components/ui/button.tsx`)、`Card` (`components/ui/card.tsx`)、`Toast` (`components/ui/toast.tsx`)。
+- 建立设计系统规范: `prototype/DESIGN_SYSTEM.md`。
+- 完成高保真可交互原型: `prototype/prototype.html`。
+- 安全审查报告: `security_best_practices_report.md`。
+- Dogfood 测试报告: `dogfood_output/dogfood_report.md`。
+
+### Updated
+- 升级版本号至 v6.0.0 (semver major change: 破坏性变更)。
+- 重构 `app/components/navigation-controls.tsx` 使用 shadcn Button 组件。
+- 重构 `app/components/joke-card.tsx` 使用 shadcn Card 组件。
+- 重构 `app/components/theme-toggle.tsx` 使用 shadcn Button 组件。
+- 重写 `components/ui/toast.tsx` 为轻量 React Context 实现，兼容 React 19。
+- 加强 `next.config.ts` 安全头: 移除 unsafe-eval，新增 HSTS、X-XSS-Protection、Permissions-Policy interest-cohort 防护。
+- 修复 `app/globals.css` Tailwind v4 @custom-variant 语法错误。
+- 修复 `use-favorites.ts` console.error 泄露调试信息问题。
+- 修复构建失败: `swcMinify: false` 解决 motion v12 与 SWC minifier 不兼容。
+- OpenSpec 文档同步: `spec.md` 版本号 + 组件库章节, `COMPONENT.md` 版本号 + 新增组件条目。
+
 ## [5.9.0] - 2026-06-10
 ### Updated
 - Updated version number across all files from 5.8.0 to 5.9.0.
