@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
-import { ThemeProvider } from '@/app/components/theme-provider'
+import { ThemeProvider } from '@/components/theme-provider'
 import { ToastProvider } from '@/components/ui/toast'
 
 export const viewport: Viewport = {
