@@ -9,7 +9,10 @@ function loadFavorites(): string[] {
   try {
     const saved = localStorage.getItem(FAVORITES_KEY)
     if (saved) {
-      return JSON.parse(saved)
+      const parsed = JSON.parse(saved)
+      if (Array.isArray(parsed) && parsed.every(item => typeof item === 'string')) {
+        return parsed
+      }
     }
   } catch {
     // Silent ignore localStorage read errors

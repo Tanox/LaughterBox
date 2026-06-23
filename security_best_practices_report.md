@@ -2,6 +2,7 @@
 
 **项目**: LaughterBox v6.0.0
 **审查日期**: 2026-06-23
+**最后更新**: 2026-06-23 (修复实施后)
 **审查范围**: 全栈 Next.js 15 + React 19 + TypeScript
 **审查方法**: 静态代码分析 + 配置审查 + 依赖审计
 **审查依据**: 
@@ -13,9 +14,18 @@
 
 ## 执行摘要
 
-LaughterBox 是一个相对低风险的全静态 PWA 项目，因其核心功能（笑话展示、收藏）不涉及敏感用户数据、支付或服务端处理。本次审查发现 **0 个高危问题**、**2 个中危问题** 和 **5 个低危/信息级建议**。整体安全态势良好，建议按优先级逐步改进。
+LaughterBox 是一个相对低风险的全静态 PWA 项目，因其核心功能（笑话展示、收藏）不涉及敏感用户数据、支付或服务端处理。本次审查发现 **0 个高危问题**、**1 个中危问题** 和 **4 个低危/信息级建议**。
 
-> **说明**: 与上次审查相比，高危问题 (CSP unsafe-inline) 经评估在 Next.js 生态中属于可接受的工程权衡，降级为中危。新增了未使用依赖、localStorage 数据验证等发现。
+### 修复实施总结
+
+本次已完成 4 项修复：
+
+| ID | 严重性 | 描述 | 状态 |
+|----|--------|------|------|
+| S-02 | MEDIUM | localStorage 数据无运行时验证 | ✅ 已修复 |
+| S-03 | LOW | 移除未使用的 `@google/genai` 依赖 | ✅ 已修复 |
+| S-04 | LOW | 移除废弃的 `X-XSS-Protection` 头 | ✅ 已修复 |
+| S-05 | LOW | `swcMinify` 禁用问题 | ✅ 已解决 (Next.js 15 默认启用 SWC) |
 
 ---
 
@@ -25,6 +35,7 @@ LaughterBox 是一个相对低风险的全静态 PWA 项目，因其核心功能
 
 **规则 ID**: NEXT-CSP-001 / REACT-CSP-001 / JS-CSP-001
 **严重性**: MEDIUM
+**状态**: 保留（工程权衡）
 **影响陈述**: 若攻击者成功注入恶意脚本，CSP 的 `'unsafe-inline'` 将允许其执行，无法提供有效防护。
 
 **位置**: [next.config.ts#L29-L31](file:///workspace/next.config.ts#L29-L31)
@@ -61,15 +72,16 @@ Next.js 运行时需要 `'unsafe-inline'` 才能正常执行（Next.js 核心依
 
 ---
 
-### [中危] localStorage 读取数据未进行运行时类型验证
+### [中危] localStorage 读取数据未进行运行时类型验证 ✅ 已修复
 
 **规则 ID**: REACT-AUTH-001 / JS-STORAGE-001
 **严重性**: MEDIUM
+**状态**: ✅ 已修复 (2026-06-23)
 **影响陈述**: 攻击者可通过 XSS 或本地篡改修改 localStorage 中的收藏数据，若应用假设数据类型正确，可能导致运行时错误或异常行为。
 
-**位置**: [app/hooks/use-favorites.ts#L7-L17](file:///workspace/app/hooks/use-favorites.ts#L7-L17)
+**位置**: [app/hooks/use-favorites.ts#L7-L21](file:///workspace/app/hooks/use-favorites.ts#L7-L21)
 
-**当前代码**:
+**修复前代码**:
 ```typescript
 function loadFavorites(): string[] {
   if (typeof window === 'undefined') return []
@@ -85,10 +97,7 @@ function loadFavorites(): string[] {
 }
 ```
 
-**问题说明**: 
-`JSON.parse()` 返回 `any` 类型，TypeScript 的类型声明不提供运行时保护。如果 localStorage 中的数据被篡改（例如改为对象或数字），后续的 `.includes()` 和 `.filter()` 调用可能抛出异常。
-
-**建议修复**:
+**修复后代码**:
 ```typescript
 function loadFavorites(): string[] {
   if (typeof window === 'undefined') return []
@@ -108,83 +117,59 @@ function loadFavorites(): string[] {
 }
 ```
 
+**修复说明**: 添加了 `Array.isArray()` 和 `typeof` 检查，确保从 localStorage 读取的数据是预期的字符串数组类型，防止数据篡改导致的运行时错误。
+
 ---
 
-### [低危] 未使用的依赖 `@google/genai` 增加攻击面
+### [低危] 未使用的依赖 `@google/genai` 增加攻击面 ✅ 已修复
 
 **规则 ID**: REACT-SUPPLY-001 / JS-SUPPLY-001
 **严重性**: LOW
+**状态**: ✅ 已修复 (2026-06-23)
 **影响陈述**: 未使用的依赖增加了供应链攻击面，且会增加构建产物体积。
 
-**位置**: [package.json#L14](file:///workspace/package.json#L14)
+**位置**: [package.json](file:///workspace/package.json)
 
-**当前配置**:
-```json
-"dependencies": {
-  "@google/genai": "^1.17.0",  // ← 未在项目中使用
-  ...
-}
-```
-
-**问题说明**: 
-代码库中未发现任何 `@google/genai` 的导入或使用。这个依赖可能是为未来功能预留的，但当前增加了不必要的攻击面。
-
-**建议修复**:
-```bash
-# 移除未使用的依赖
-npm uninstall @google/genai
-```
+**修复说明**: 从 `package.json` 中移除了 `@google/genai` 依赖，因为代码库中未使用此依赖。
 
 > 如果计划在未来版本中使用 AI 生成笑话功能，建议在实际实现时再安装此依赖。
 
 ---
 
-### [低危] `X-XSS-Protection` 头已废弃，现代浏览器不再支持
+### [低危] `X-XSS-Protection` 头已废弃，现代浏览器不再支持 ✅ 已修复
 
 **规则 ID**: NEXT-HEADERS-001
 **严重性**: LOW
+**状态**: ✅ 已修复 (2026-06-23)
 **影响陈述**: 该安全头在现代浏览器中已被移除，保留无实际防护效果，可能产生虚假安全感。
 
-**位置**: [next.config.ts#L41](file:///workspace/next.config.ts#L41)
+**位置**: [next.config.ts](file:///workspace/next.config.ts)
 
-**当前配置**:
-```typescript
-{ key: 'X-XSS-Protection', value: '1; mode=block' },
-```
+**修复说明**: 从 `securityHeaders` 数组中移除了 `X-XSS-Protection` 头。
 
 **问题说明**: 
 - Chrome、Edge、Firefox 等现代浏览器已移除 XSS Auditor 支持
 - 该头仅对老旧浏览器有有限作用
-- 保留可能误导开发者认为有 XSS 防护
-
-**建议修复**:
-```typescript
-// 移除 X-XSS-Protection 头，改用更有效的 CSP 策略
-// 或保留但添加注释说明其历史意义
-```
+- 更有效的防护方式是 CSP 策略
 
 ---
 
-### [低危] `swcMinify` 被禁用，可能泄露代码结构
+### [低危] `swcMinify` 被禁用，可能泄露代码结构 ✅ 已解决
 
 **规则 ID**: REACT-CONFIG-001
 **严重性**: LOW
+**状态**: ✅ 已解决 (2026-06-23)
 **影响陈述**: 禁用代码压缩会使生产构建体积更大，且代码结构更易被逆向分析。
 
-**位置**: [next.config.ts#L52](file:///workspace/next.config.ts#L52)
-
-**当前配置**:
-```typescript
-// 禁用 SWC minify 避免 motion v12 导致的 webpack-runtime prerender 错误
-swcMinify: false,
-```
+**位置**: [next.config.ts](file:///workspace/next.config.ts)
 
 **问题说明**: 
-注释说明这是为了解决 motion v12 的兼容性问题而临时禁用的。虽然代码混淆不是强安全措施，但禁用会略微降低攻击者的逆向成本。
+原配置中 `swcMinify: false` 是为了解决 motion v12 的兼容性问题。经测试：
+- Next.js 15 中 `swcMinify` 配置项已移除（SWC 压缩现为默认行为）
+- 构建成功，无错误，说明 motion 兼容性问题已不存在
 
-**建议**:
-- 关注 motion 库的更新，在兼容性问题解决后重新启用 SWC 压缩
-- 定期测试 `swcMinify: true` 是否能正常构建
+**修复说明**: 
+移除了无效的 `swcMinify` 配置项。Next.js 15 默认启用 SWC 压缩，代码混淆和压缩已正常工作。
 
 ---
 
@@ -192,29 +177,10 @@ swcMinify: false,
 
 **规则 ID**: JS-XSS-001（间接相关）
 **严重性**: LOW
+**状态**: 保留（降级方案）
 **影响陈述**: `document.execCommand` 已被 Web 标准废弃，未来浏览器可能移除支持。
 
 **位置**: [app/components/navigation-controls.tsx#L48-L65](file:///workspace/app/components/navigation-controls.tsx#L48-L65)
-
-**当前代码**:
-```typescript
-function fallbackCopy(text: string) {
-  try {
-    const ta = document.createElement('textarea')
-    ta.value = text
-    ta.setAttribute('readonly', '')
-    ta.style.position = 'absolute'
-    ta.style.left = '-9999px'
-    document.body.appendChild(ta)
-    ta.select()
-    document.execCommand('copy')  // ← 已废弃 API
-    document.body.removeChild(ta)
-    // ...
-  } catch {
-    // ...
-  }
-}
-```
 
 **问题说明**: 
 - `document.execCommand` 已从 Web 标准中移除
@@ -231,6 +197,7 @@ function fallbackCopy(text: string) {
 
 **规则 ID**: REACT-SW-001
 **严重性**: INFO
+**状态**: 持续监控
 **影响陈述**: PWA 的 Service Worker 缓存了页面和静态资源，需确保不会缓存敏感数据（本项目无敏感数据，风险低）。
 
 **位置**: [next.config.ts#L7-L16](file:///workspace/next.config.ts#L7-L16)
@@ -283,44 +250,47 @@ npm outdated
 | frame-ancestors 'none' | ✅ | NEXT-CSP-001 - CSP 层面的 clickjacking 防护 |
 | 组件无 `dangerouslySetInnerHTML` | ✅ | REACT-XSS-001 - 笑话文本通过 React 默认转义渲染 |
 | 无硬编码密钥/凭证 | ✅ | REACT-CONFIG-001 / NEXT-SECRETS-001 |
-| 无内联用户输入渲染 | ✅ | REACT-XSS-002 - localStorage 仅存 ID 字符串 |
+| localStorage 数据运行时验证 | ✅ | JS-STORAGE-001 - 已添加类型校验 |
 | TypeScript strict 模式 | ✅ | tsconfig.json 中已启用 |
 | .env 文件已 gitignore | ✅ | NEXT-SECRETS-001 - 防止意外提交密钥 |
 | React Strict Mode 已启用 | ✅ | next.config.ts - 有助于提前发现问题 |
 | ESLint 构建时检查 | ✅ | next.config.ts - ignoreDuringBuilds: false |
 | TypeScript 构建时检查 | ✅ | next.config.ts - ignoreBuildErrors: false |
+| SWC 代码压缩启用 | ✅ | Next.js 15 默认行为 |
 
 ---
 
 ## 建议优先级总结
 
-| ID | 严重性 | 描述 | 建议版本 | 修复工作量 |
-|----|--------|------|---------|-----------|
-| S-01 | MEDIUM | CSP 含 `'unsafe-inline'` | v6.2.0 专项任务 | 大 |
-| S-02 | MEDIUM | localStorage 数据无运行时验证 | v6.1.0 | 小 |
-| S-03 | LOW | 移除未使用的 `@google/genai` 依赖 | v6.1.0 | 极小 |
-| S-04 | LOW | 移除废弃的 `X-XSS-Protection` 头 | v6.1.0 | 极小 |
-| S-05 | LOW | `swcMinify` 禁用的后续跟进 | v6.2.0+ | 中 |
-| S-06 | LOW | `document.execCommand` 降级方案 | 长期 | 极小 |
+| ID | 严重性 | 描述 | 状态 | 建议版本 |
+|----|--------|------|------|---------|
+| S-01 | MEDIUM | CSP 含 `'unsafe-inline'` | 保留 | v6.2.0 专项任务 |
+| S-02 | MEDIUM | localStorage 数据无运行时验证 | ✅ 已修复 | v6.0.1 |
+| S-03 | LOW | 移除未使用的 `@google/genai` 依赖 | ✅ 已修复 | v6.0.1 |
+| S-04 | LOW | 移除废弃的 `X-XSS-Protection` 头 | ✅ 已修复 | v6.0.1 |
+| S-05 | LOW | `swcMinify` 禁用问题 | ✅ 已解决 | v6.0.1 |
+| S-06 | LOW | `document.execCommand` 降级方案 | 保留 | 长期 |
 | I-01 | INFO | 定期运行 npm audit | 持续 | — |
 | I-02 | INFO | Service Worker 缓存监控 | 持续 | — |
 
 ---
 
-## 修复计划建议
+## 修复验证
 
-### 立即修复（v6.0.x 补丁版本）
-1. S-03: 移除未使用的 `@google/genai` 依赖（1 行改动）
-2. S-02: 为 localStorage 数据添加运行时验证（~10 行改动）
-3. S-04: 移除或注释 `X-XSS-Protection` 头（1 行改动）
+### 验证结果
+- ✅ TypeScript 类型检查通过 (`npx tsc --noEmit`)
+- ✅ 生产构建成功 (`npm run build`)
+- ✅ 无构建警告
+- ✅ 所有页面正常预渲染
 
-### 短期改进（v6.1.0）
-4. S-05: 测试 motion 库更新后是否可重新启用 `swcMinify`
-5. 添加 `npm audit` 到 CI 流程
+### 验证命令
+```bash
+# TypeScript 类型检查
+npx tsc --noEmit
 
-### 长期规划（v6.2.0+）
-6. S-01: 评估 CSP nonce 方案可行性
-7. 评估添加 ESLint 安全插件
+# 生产构建
+npm run build
+```
 
 ---
 

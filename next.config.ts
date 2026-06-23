@@ -38,7 +38,6 @@ const securityHeaders = [
     value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
   },
   { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
-  { key: 'X-XSS-Protection', value: '1; mode=block' },
 ]
 
 const nextConfig: NextConfig = {
@@ -48,8 +47,6 @@ const nextConfig: NextConfig = {
   images: { unoptimized: true },
   ...(isDeployingToVercel || isDeployingToEdgeOne ? {} : { output: 'standalone' }),
   transpilePackages: ['motion'],
-  // 禁用 SWC minify 避免 motion v12 导致的 webpack-runtime prerender 错误
-  swcMinify: false,
   onDemandEntries: {
     maxInactiveAge: 25 * 1000,
     pagesBufferLength: 2,
