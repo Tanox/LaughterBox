@@ -4,9 +4,10 @@ import { motion } from 'motion/react'
 import React from 'react'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
+import { Joke } from '@/lib/types'
 
 interface JokeCardProps {
-  joke: string
+  joke: Joke
   index: number
   total: number
   direction: number
@@ -22,8 +23,8 @@ export const JokeCard = React.memo(function JokeCard({
 }: JokeCardProps) {
   return (
     <motion.div
-      id={`joke-card-${index}`}
-      key={index}
+      id={`joke-card-${joke.id}`}
+      key={joke.id}
       custom={direction}
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
@@ -55,7 +56,6 @@ export const JokeCard = React.memo(function JokeCard({
           'relative flex min-h-[350px] flex-col items-center justify-center p-8 sm:p-12 md:min-h-[450px] md:p-16 lg:p-20'
         )}
       >
-        {/* Quote decoration top-left */}
         <div className="pointer-events-none absolute top-8 left-8 opacity-10 dark:opacity-20 select-none">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -73,7 +73,7 @@ export const JokeCard = React.memo(function JokeCard({
             id="joke-text"
             className="max-w-[90%] text-center font-serif text-3xl font-light leading-relaxed tracking-tight sm:text-4xl md:text-5xl lg:text-6xl select-none animate-fadeIn"
           >
-            {joke}
+            {joke.content}
           </p>
 
           <div className="flex items-center gap-4 opacity-30">
@@ -85,7 +85,6 @@ export const JokeCard = React.memo(function JokeCard({
           </div>
         </div>
 
-        {/* Quote decoration bottom-right */}
         <div className="pointer-events-none absolute bottom-8 right-8 opacity-10 dark:opacity-20 select-none">
           <svg
             xmlns="http://www.w3.org/2000/svg"

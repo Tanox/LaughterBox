@@ -4,8 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 
 const FAVORITES_KEY = 'laughterbox-favorites'
 
-// Helper to load favorites from localStorage
-function loadFavorites(): number[] {
+function loadFavorites(): string[] {
   if (typeof window === 'undefined') return []
   try {
     const saved = localStorage.getItem(FAVORITES_KEY)
@@ -13,16 +12,15 @@ function loadFavorites(): number[] {
       return JSON.parse(saved)
     }
   } catch {
-    // 静默忽略 localStorage 读取错误，避免泄露内部详情到控制台
+    // Silent ignore localStorage read errors
   }
   return []
 }
 
 export function useFavorites() {
-  const [favorites, setFavorites] = useState<number[]>(loadFavorites)
+  const [favorites, setFavorites] = useState<string[]>(loadFavorites)
   const isFirstRender = useRef(true)
 
-  // Save favorites to localStorage whenever they change (skip first render)
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false
@@ -31,22 +29,20 @@ export function useFavorites() {
     localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites))
   }, [favorites])
 
-  const toggleFavorite = useCallback((index: number) => {
+  const toggleFavorite = useCallback((id: string) => {
     setFavorites(prev => {
-      if (prev.includes(index)) {
-        return prev.filter(i => i !== index)
+      if (prev.includes(id)) {
+        return prev.filter(favId => favId !== id)
       } else {
-        return [...prev, index]
+        return [...prev, id]
       }
     })
   }, [])
 
-  const isFavorite = useCallback((index: number) => {
-    return favorites.includes(index)
+  const isFavorite = useCallback((id: string) => {
+    return favorites.includes(id)
   }, [favorites])
 
-  // Since favorites are loaded synchronously via useState initializer,
-  // they are always available before first render
   return {
     favorites,
     toggleFavorite,

@@ -7,9 +7,10 @@ import { JokeCard } from '@/components/joke-card'
 import { NavigationControls } from '@/components/navigation-controls'
 import { JOKES_DATA_DEDUPED } from '@/lib/jokes-data'
 import { useFavorites } from '@/hooks/use-favorites'
+import { Joke } from '@/lib/types'
 
 export default function Page() {
-  const [jokes] = useState<string[]>(JOKES_DATA_DEDUPED)
+  const [jokes] = useState<Joke[]>(JOKES_DATA_DEDUPED)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [mounted, setMounted] = useState(false)
   const [direction, setDirection] = useState(0)
@@ -75,7 +76,6 @@ export default function Page() {
     [handleNext, handlePrev]
   )
 
-  // Keyboard shortcuts for accessibility
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (!mounted) return
@@ -99,13 +99,13 @@ export default function Page() {
   }, [mounted, handleNext, handlePrev, handleRandom])
 
   const isReady = mounted && favoritesLoaded
+  const currentJoke = jokes[currentIndex]
 
   return (
     <div
       id="page-wrapper"
       className="flex min-h-screen flex-col bg-background transition-colors duration-300"
     >
-      {/* Header / brand */}
       <header
         id="main-header"
         className="sticky top-0 z-10 border-b border-border/50 bg-background/90 backdrop-blur"
@@ -140,14 +140,13 @@ export default function Page() {
         </div>
       </header>
 
-      {/* Main content */}
       <main className="flex flex-1 flex-col items-center justify-center px-4 py-6 md:px-12 lg:px-24 overflow-hidden">
         <div className="relative w-full max-w-3xl lg:max-w-4xl">
           <AnimatePresence mode="wait" custom={direction}>
-            {isReady && jokes.length > 0 ? (
+            {isReady && jokes.length > 0 && currentJoke ? (
               <JokeCard
-                key={currentIndex}
-                joke={jokes[currentIndex]}
+                key={currentJoke.id}
+                joke={currentJoke}
                 index={currentIndex}
                 total={jokes.length}
                 direction={direction}
@@ -163,14 +162,14 @@ export default function Page() {
             )}
           </AnimatePresence>
 
-          {isReady && jokes.length > 0 && (
+          {isReady && jokes.length > 0 && currentJoke && (
             <NavigationControls
               onRandom={handleRandom}
               onPrev={handlePrev}
               onNext={handleNext}
-              onToggleFavorite={() => toggleFavorite(currentIndex)}
-              isFavorite={isFavorite(currentIndex)}
-              jokeText={jokes[currentIndex]}
+              onToggleFavorite={() => toggleFavorite(currentJoke.id)}
+              isFavorite={isFavorite(currentJoke.id)}
+              jokeText={currentJoke.content}
               autoPlay={autoPlay}
               onToggleAutoPlay={() => setAutoPlay(prev => !prev)}
             />
@@ -178,7 +177,6 @@ export default function Page() {
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="border-t border-border/50 py-4 text-center">
         <p className="text-xs text-muted-foreground">
           左右滑动或使用方向键切换 · 按空格随机
