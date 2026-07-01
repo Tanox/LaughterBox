@@ -1,10 +1,18 @@
 'use client'
 
+// app/components/theme-toggle.tsx v6.0.0
+
 import * as React from 'react'
 import { Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+
+const ThemeToggleSkeleton = function ThemeToggleSkeleton() {
+  return (
+    <div className="h-10 w-10 rounded-full border border-border bg-card md:h-11 md:w-11" />
+  )
+}
 
 export function ThemeToggle() {
   const { setTheme, resolvedTheme } = useTheme()
@@ -15,17 +23,19 @@ export function ThemeToggle() {
   }, [])
 
   if (!mounted) {
-    return (
-      <div className="h-10 w-10 rounded-full border border-border bg-card md:h-11 md:w-11" />
-    )
+    return <ThemeToggleSkeleton />
   }
 
   const isDark = resolvedTheme === 'dark'
 
+  const handleToggle = React.useCallback(() => {
+    setTheme(isDark ? 'light' : 'dark')
+  }, [isDark, setTheme])
+
   return (
     <Button
       id="btn-theme-toggle"
-      onClick={() => setTheme(isDark ? 'light' : 'dark')}
+      onClick={handleToggle}
       variant="icon-round"
       size="icon"
       aria-label={isDark ? '切换到浅色模式' : '切换到深色模式'}
