@@ -14,7 +14,7 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'LaughterBox v6.0.0',
+  title: 'LaughterBox v6.1.0',
   description: '极简风格的短篇笑话集合，每篇控制在 100 字以内。',
   keywords: '笑话, 幽默, 极简, 段子, 开心',
   authors: [{ name: 'LaughterBox Team' }],

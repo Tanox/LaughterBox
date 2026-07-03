@@ -1,6 +1,6 @@
 'use client'
 
-// app/hooks/use-favorites.ts v6.0.0
+// app/hooks/use-favorites.ts v6.1.0
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 
@@ -59,7 +59,8 @@ export function useFavorites() {
   const favoritesSet = useMemo(() => new Set(favorites), [favorites])
 
   useEffect(() => {
-    setIsLoaded(true)
+    const timer = setTimeout(() => setIsLoaded(true), 0)
+    return () => clearTimeout(timer)
   }, [])
 
   useEffect(() => {

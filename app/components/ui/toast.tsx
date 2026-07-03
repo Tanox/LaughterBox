@@ -1,6 +1,6 @@
 'use client'
 
-// app/components/ui/toast.tsx v6.0.0
+// app/components/ui/toast.tsx v6.1.0
 
 import * as React from 'react'
 import { cn } from '@/lib/utils'
@@ -24,9 +24,15 @@ const ToastContext = React.createContext<ToastContextValue | null>(null)
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = React.useState<ToastItem[]>([])
+  const timeoutsRef = React.useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map())
 
   const dismiss = React.useCallback((id: string) => {
     setItems((prev) => prev.filter((t) => t.id !== id))
+    const timer = timeoutsRef.current.get(id)
+    if (timer) {
+      clearTimeout(timer)
+      timeoutsRef.current.delete(id)
+    }
   }, [])
 
   const add = React.useCallback(
@@ -35,12 +41,21 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       const item: ToastItem = { id, duration: 2500, variant: 'info', ...t }
       setItems((prev) => [...prev, item])
       if (item.duration && item.duration > 0) {
-        setTimeout(() => dismiss(id), item.duration)
+        const timer = setTimeout(() => dismiss(id), item.duration)
+        timeoutsRef.current.set(id, timer)
       }
       return id
     },
     [dismiss]
   )
+
+  React.useEffect(() => {
+    const timeouts = timeoutsRef.current
+    return () => {
+      timeouts.forEach((timer) => clearTimeout(timer))
+      timeouts.clear()
+    }
+  }, [])
 
   const value = React.useMemo<ToastContextValue>(
     () => ({ items, add, dismiss }),

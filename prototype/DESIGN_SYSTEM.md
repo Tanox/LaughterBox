@@ -1,4 +1,4 @@
-# LaughterBox 设计系统 (Design System) v6.0.0
+# LaughterBox 设计系统 (Design System) v6.1.0
 
 > 极简、克制、专注内容。以"留白"为核心，以"可读"为目标。
 > 参考实现：`app/globals.css`、`prototype/prototype.html`、`components/ui/*`
@@ -394,5 +394,6 @@
 
 | 版本 | 日期 | 变更 |
 | --- | --- | --- |
+| v6.1.0 | 2026-07-03 | 代码审查修复，拆分大文件，对齐原型字号与行高 |
 | v6.0.0 | 2026-06-19 | 引入 shadcn/ui 风格；重建设计系统；新增 Toast、Card、Button 基础组件；重写原型 |
 | v5.9.0 | — | 早期版本（纯 Tailwind 原子类） |

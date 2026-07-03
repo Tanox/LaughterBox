@@ -1,47 +1,18 @@
 'use client'
 
-// app/page.tsx v6.0.0
+// app/page.tsx v6.1.0
 
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { AnimatePresence } from 'motion/react'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { JokeCard } from '@/components/joke-card'
 import { NavigationControls } from '@/components/navigation-controls'
+import { LogoIcon, SkeletonCard } from '@/components/page-decorations'
 import { JOKES_DATA_DEDUPED } from '@/lib/jokes-data'
 import { useFavorites } from '@/hooks/use-favorites'
-import { Joke } from '@/lib/types'
 
 const JOKES = JOKES_DATA_DEDUPED
 const JOKES_COUNT = JOKES.length
-
-const LogoIcon = function LogoIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2.2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-4 w-4"
-      aria-hidden="true"
-    >
-      <path d="M12 2l2.39 5.37L20 8l-4.2 3.73L17.5 18l-5.5-3.27L6.5 18 17.18 8 12 2z" />
-    </svg>
-  )
-}
-
-const SkeletonCard = function SkeletonCard() {
-  return (
-    <div
-      aria-hidden="true"
-      className="flex min-h-[350px] flex-col justify-center rounded-3xl bg-card p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.20)] sm:p-12 md:min-h-[450px] md:p-16 lg:p-20"
-    >
-      <div className="h-12 w-3/4 animate-pulse self-center rounded-xl bg-muted dark:bg-neutral-800" />
-    </div>
-  )
-}
 
 export default function Page() {
   const [currentIndex, setCurrentIndex] = useState(0)

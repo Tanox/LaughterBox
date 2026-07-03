@@ -1,6 +1,6 @@
 'use client'
 
-// app/components/navigation-controls.tsx v6.0.0
+// app/components/navigation-controls.tsx v6.1.0
 
 import {
   Shuffle,
@@ -16,6 +16,7 @@ import {
 import React, { useCallback, useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/toast'
+import { useClipboard } from '@/hooks/use-clipboard'
 
 interface NavigationControlsProps {
   onRandom: () => void
@@ -29,23 +30,6 @@ interface NavigationControlsProps {
   registerCopy?: (fn: () => void) => void
 }
 
-function fallbackCopy(text: string): boolean {
-  try {
-    const ta = document.createElement('textarea')
-    ta.value = text
-    ta.setAttribute('readonly', '')
-    ta.style.position = 'absolute'
-    ta.style.left = '-9999px'
-    document.body.appendChild(ta)
-    ta.select()
-    document.execCommand('copy')
-    document.body.removeChild(ta)
-    return true
-  } catch {
-    return false
-  }
-}
-
 export const NavigationControls = React.memo(function NavigationControls({
   onRandom,
   onPrev,
@@ -57,49 +41,14 @@ export const NavigationControls = React.memo(function NavigationControls({
   onToggleAutoPlay,
   registerCopy,
 }: NavigationControlsProps) {
-  const [copied, setCopied] = useState(false)
   const [heartAnimating, setHeartAnimating] = useState(false)
   const { toast } = useToast()
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const { copied, copy } = useClipboard()
   const heartTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const handleCopy = useCallback(() => {
-    let success = false
-    try {
-      if (navigator?.clipboard?.writeText) {
-        navigator.clipboard
-          .writeText(jokeText)
-          .then(() => {
-            success = true
-          })
-          .catch(() => {
-            success = fallbackCopy(jokeText)
-          })
-          .finally(() => {
-            if (success) {
-              setCopied(true)
-              toast({ title: '已复制到剪贴板', variant: 'success', duration: 2000 })
-              if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current)
-              copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000)
-            } else {
-              toast({ title: '复制失败，请重试', variant: 'error', duration: 2000 })
-            }
-          })
-      } else {
-        success = fallbackCopy(jokeText)
-        if (success) {
-          setCopied(true)
-          toast({ title: '已复制到剪贴板', variant: 'success', duration: 2000 })
-          if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current)
-          copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000)
-        } else {
-          toast({ title: '复制失败，请重试', variant: 'error', duration: 2000 })
-        }
-      }
-    } catch {
-      toast({ title: '复制失败，请重试', variant: 'error', duration: 2000 })
-    }
-  }, [jokeText, toast])
+    copy(jokeText)
+  }, [jokeText, copy])
 
   useEffect(() => {
     if (registerCopy) {
@@ -109,7 +58,6 @@ export const NavigationControls = React.memo(function NavigationControls({
 
   useEffect(() => {
     return () => {
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current)
       if (heartTimeoutRef.current) clearTimeout(heartTimeoutRef.current)
     }
   }, [])

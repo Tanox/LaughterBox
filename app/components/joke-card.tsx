@@ -1,6 +1,6 @@
 'use client'
 
-// app/components/joke-card.tsx v6.0.0
+// app/components/joke-card.tsx v6.1.0
 
 import { motion } from 'motion/react'
 import React from 'react'
@@ -52,7 +52,7 @@ const cardVariants = {
 
 const cardTransition = {
   duration: 0.4,
-  ease: [0.34, 1.56, 0.64, 1],
+  ease: [0.34, 1.56, 0.64, 1] as [number, number, number, number],
 }
 
 export const JokeCard = React.memo(function JokeCard({
@@ -90,7 +90,7 @@ export const JokeCard = React.memo(function JokeCard({
         <div className="relative z-10 flex flex-col items-center gap-8">
           <p
             id="joke-text"
-            className="max-w-[90%] text-center font-serif text-2xl font-light leading-relaxed tracking-tight sm:text-3xl md:text-3xl lg:text-4xl select-none animate-fadeIn"
+            className="max-w-[90%] text-center font-serif text-2xl font-light leading-[1.65] tracking-tight md:text-3xl md:leading-[1.7] lg:text-4xl lg:leading-[1.8] select-none animate-fadeIn"
           >
             {joke.content}
           </p>

@@ -1,6 +1,6 @@
 'use client'
 
-// app/components/theme-toggle.tsx v6.0.0
+// app/components/theme-toggle.tsx v6.1.0
 
 import * as React from 'react'
 import { Moon, Sun } from 'lucide-react'
@@ -18,6 +18,12 @@ export function ThemeToggle() {
   const { setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = React.useState(false)
 
+  const isDark = resolvedTheme === 'dark'
+
+  const handleToggle = React.useCallback(() => {
+    setTheme(isDark ? 'light' : 'dark')
+  }, [isDark, setTheme])
+
   React.useEffect(() => {
     setMounted(true)
   }, [])
@@ -25,12 +31,6 @@ export function ThemeToggle() {
   if (!mounted) {
     return <ThemeToggleSkeleton />
   }
-
-  const isDark = resolvedTheme === 'dark'
-
-  const handleToggle = React.useCallback(() => {
-    setTheme(isDark ? 'light' : 'dark')
-  }, [isDark, setTheme])
 
   return (
     <Button
