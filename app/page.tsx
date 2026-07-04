@@ -3,6 +3,8 @@
 // app/page.tsx v6.1.0
 
 import { useState, useCallback, useEffect, useRef } from 'react'
+import Link from 'next/link'
+import { Heart } from 'lucide-react'
 import { AnimatePresence } from 'motion/react'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { JokeCard } from '@/components/joke-card'
@@ -19,7 +21,7 @@ export default function Page() {
   const [mounted, setMounted] = useState(false)
   const [direction, setDirection] = useState(0)
   const [autoPlay, setAutoPlay] = useState(false)
-  const { toggleFavorite, isFavorite, isLoaded: favoritesLoaded } = useFavorites()
+  const { favorites, toggleFavorite, isFavorite, isLoaded: favoritesLoaded } = useFavorites()
   const copyCallbackRef = useRef<(() => void) | null>(null)
 
   useEffect(() => {
@@ -71,9 +73,9 @@ export default function Page() {
 
   const handleDragEnd = useCallback(
     (offset: { x: number }) => {
-      if (offset.x < -50) {
+      if (offset.x < -60) {
         handleNext()
-      } else if (offset.x > 50) {
+      } else if (offset.x > 60) {
         handlePrev()
       }
     },
@@ -135,7 +137,7 @@ export default function Page() {
     >
       <header
         id="main-header"
-        className="sticky top-0 z-10 border-b border-border/50 bg-background/90 backdrop-blur"
+        className="sticky top-0 z-10 border-b border-border/50 bg-background/90 backdrop-blur-md"
       >
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-8">
           <div className="flex items-center gap-3">
@@ -144,12 +146,27 @@ export default function Page() {
             </div>
             <div className="flex flex-col leading-tight">
               <span className="text-sm font-semibold tracking-tight">LaughterBox</span>
-              <span className="hidden text-[11px] text-muted-foreground sm:block">
+              <span className="text-[11px] text-muted-foreground">
                 极简笑话收藏 · {JOKES_COUNT} 则
               </span>
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Link
+              href="/favorites"
+              className="relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-card text-card-foreground shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all hover:-translate-y-0.5 hover:bg-accent hover:shadow-[0_8px_20px_rgb(0,0,0,0.10)] active:scale-95 md:h-11 md:w-11 dark:shadow-[0_8px_30px_rgb(0,0,0,0.20)] dark:hover:bg-neutral-800 dark:hover:shadow-[0_8px_20px_rgb(0,0,0,0.35)]"
+              aria-label={`查看收藏${favorites.length > 0 ? `（${favorites.length} 则）` : ''}`}
+            >
+              <Heart className="h-4 w-4 md:h-5 md:w-5" strokeWidth={2.25} />
+              {mounted && favorites.length > 0 && (
+                <span
+                  aria-hidden="true"
+                  className="absolute -right-1 -top-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold text-white shadow-sm"
+                >
+                  {favorites.length > 99 ? '99+' : favorites.length}
+                </span>
+              )}
+            </Link>
             <ThemeToggle />
           </div>
         </div>
