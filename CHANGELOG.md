@@ -1,25 +1,36 @@
 # CHANGELOG
 
-## [6.1.0] - 2026-07-03
+## [6.1.0] - 2026-07-04
 ### Fixed
 - 修复 `joke-card.tsx` TypeScript 类型错误：Motion 动画 `ease` 数组类型不匹配。
 - 修复 `theme-toggle.tsx` ESLint 错误：`useCallback` 在条件返回之后调用（违反 Hooks 规则）。
 - 修复 `use-favorites.ts` ESLint 错误：`setState` 在 `useEffect` 中同步调用导致级联渲染。
 - 修复 `toast.tsx` 内存泄漏：`setTimeout` 未在组件卸载时清理。
 - 对齐原型规范：修正笑话卡片字号断点（移除多余的 `sm:text-3xl`）和行高（`leading-[1.65]` / `md:leading-[1.7]` / `lg:leading-[1.8]`）。
+- 对齐原型无障碍属性：`JokeCard` motion.div 添加 `tabIndex={0} role="region" aria-label`。
+- 对齐原型卡片尺寸：`JokeCard` 与 `SkeletonCard` 统一为 `min-h-[360px] md:min-h-[480px] p-8 md:p-12`。
+- 对齐原型 toolbar 语义：`NavigationControls` 外层添加 `role="toolbar" aria-label`。
+- 对齐原型 Toast 反馈：自动播放按钮触发 Toast 提示；取消收藏 Toast 改为 `success` variant。
+- `Toast` 组件按 `variant` 渲染对应图标（Check/X/Info）与配色。
+- 主页拖拽阈值 50→60 与原型一致。
+- 修复 `tsconfig.json` TS 5.9 `baseUrl` 弃用警告（添加 `ignoreDeprecations: "5.0"`）。
 
 ### Added
 - 新增 `app/lib/clipboard.ts`：提取剪贴板工具函数（`fallbackCopy`、`copyToClipboard`）。
 - 新增 `app/hooks/use-clipboard.ts`：封装复制逻辑与 Toast 反馈的自定义 Hook。
 - 新增 `app/components/page-decorations.tsx`：提取 `LogoIcon` 和 `SkeletonCard` 静态组件。
+- 新增 `app/favorites/page.tsx`：收藏列表页面，消费 `useFavorites` Hook，含加载骨架、空状态、移除收藏。
+- `NavigationControls` 新增版本标签 `v6.1.0`。
+- 主页 Header 新增 `/favorites` 收藏入口（带计数徽章，`mounted` 门控）。
 
 ### Changed
 - 拆分 `jokes-data.ts`（905行）为 5 个批次文件（各 185 行），保持导入路径不变。
 - 重构 `navigation-controls.tsx` 使用 `useClipboard` Hook，消除重复代码（241行→189行）。
 - 重构 `page.tsx` 提取静态组件到 `page-decorations.tsx`（226行→197行）。
 - 统一所有源文件版本号至 v6.1.0。
-- 更新 `openspec/spec.md` 笑话数量为 150 条（与实际数据一致）。
-- 更新 `openspec/COMPONENT.md` 组件版本号与新文件条目。
+- 主页 Header `backdrop-blur`→`backdrop-blur-md`；副标题移动端始终可见。
+- 更新 `openspec/spec.md`：版本号、拖拽阈值、目录结构新增 `favorites/`、版本历史。
+- 更新 `openspec/COMPONENT.md` 组件版本号至 v6.1.0 与新文件条目（FavoritesPage）。
 
 ## [6.0.0] - 2026-06-12
 ### Added

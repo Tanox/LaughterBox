@@ -8,18 +8,19 @@
 
 | 组件名 | 文件名 | 版本 | 类型 | 状态 |
 |-------|-------|------|------|------|
-| Page | app/page.tsx | v6.0.0 | 页面组件 | ✅ 核心 |
-| ThemeProvider | app/components/theme-provider.tsx | v6.0.0 | 上下文提供者 | ✅ 核心 |
-| ThemeToggle | app/components/theme-toggle.tsx | v6.0.0 | UI 组件 | ✅ 核心 |
-| JokeCard | app/components/joke-card.tsx | v6.0.0 | UI 组件（shadcn Card） | ✅ 核心 |
-| NavigationControls | app/components/navigation-controls.tsx | v6.0.0 | UI 组件（shadcn Button） | ✅ 核心 |
-| PageDecorations | app/components/page-decorations.tsx | v6.0.0 | UI 组件（Logo、骨架屏） | ✅ 核心 |
-| Button | components/ui/button.tsx | v6.0.0 | shadcn 基础组件 | ✅ 基础 |
-| Card | components/ui/card.tsx | v6.0.0 | shadcn 基础组件 | ✅ 基础 |
-| Toast | components/ui/toast.tsx | v6.0.0 | shadcn 反馈组件 | ✅ 基础 |
-| useFavorites | app/hooks/use-favorites.ts | v6.0.0 | 自定义 Hook | ✅ 核心 |
-| useClipboard | app/hooks/use-clipboard.ts | v6.0.0 | 自定义 Hook | ✅ 核心 |
-| clipboard | app/lib/clipboard.ts | v6.0.0 | 工具函数 | ✅ 基础 |
+| Page | app/page.tsx | v6.1.0 | 页面组件 | ✅ 核心 |
+| FavoritesPage | app/favorites/page.tsx | v6.1.0 | 页面组件 | ✅ 核心 |
+| ThemeProvider | app/components/theme-provider.tsx | v6.1.0 | 上下文提供者 | ✅ 核心 |
+| ThemeToggle | app/components/theme-toggle.tsx | v6.1.0 | UI 组件 | ✅ 核心 |
+| JokeCard | app/components/joke-card.tsx | v6.1.0 | UI 组件（shadcn Card） | ✅ 核心 |
+| NavigationControls | app/components/navigation-controls.tsx | v6.1.0 | UI 组件（shadcn Button） | ✅ 核心 |
+| PageDecorations | app/components/page-decorations.tsx | v6.1.0 | UI 组件（Logo、骨架屏） | ✅ 核心 |
+| Button | components/ui/button.tsx | v6.1.0 | shadcn 基础组件 | ✅ 基础 |
+| Card | components/ui/card.tsx | v6.1.0 | shadcn 基础组件 | ✅ 基础 |
+| Toast | components/ui/toast.tsx | v6.1.0 | shadcn 反馈组件 | ✅ 基础 |
+| useFavorites | app/hooks/use-favorites.ts | v6.1.0 | 自定义 Hook | ✅ 核心 |
+| useClipboard | app/hooks/use-clipboard.ts | v6.1.0 | 自定义 Hook | ✅ 核心 |
+| clipboard | app/lib/clipboard.ts | v6.1.0 | 工具函数 | ✅ 基础 |
 
 ## 3. Page 组件 (主页面)
 
@@ -29,7 +30,7 @@
 |-----|-----|
 | 文件路径 | app/page.tsx |
 | 组件名 | Page |
-| 版本 | v6.0.0 |
+| 版本 | v6.1.0 |
 | 类型 | 页面组件 (App Router RSC) |
 | 导出方式 | 默认导出 |
 | 依赖 | React、Motion、Lucide React、JOKES_DATA |
@@ -261,7 +262,7 @@ export default function RootLayout({ children }) {
 |-----|-----|
 | 文件路径 | app/components/theme-provider.tsx |
 | 组件名 | ThemeProvider |
-| 版本 | v6.0.0 |
+| 版本 | v6.1.0 |
 | 类型 | 客户端组件 |
 | 导出方式 | 命名导出 |
 | 依赖 | next-themes |
@@ -332,7 +333,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 |-----|-----|
 | 文件路径 | app/components/theme-toggle.tsx |
 | 组件名 | ThemeToggle |
-| 版本 | v6.0.0 |
+| 版本 | v6.1.0 |
 | 类型 | 客户端组件 |
 | 导出方式 | 命名导出 |
 | 依赖 | next-themes、Lucide React |
@@ -423,7 +424,7 @@ export default function Header() {
 |-----|-----|
 | 文件路径 | app/components/joke-card.tsx |
 | 组件名 | JokeCard |
-| 版本 | v6.0.0 |
+| 版本 | v6.1.0 |
 | 类型 | 客户端组件 |
 | 导出方式 | 命名导出 |
 | 状态 | ✅ 核心组件 |
@@ -524,7 +525,7 @@ export default function JokesList() {
 |-----|-----|
 | 文件路径 | app/components/navigation-controls.tsx |
 | 组件名 | NavigationControls |
-| 版本 | v6.0.0 |
+| 版本 | v6.1.0 |
 | 类型 | 客户端组件 |
 | 导出方式 | 命名导出 |
 | 依赖 | Lucide React、React |
@@ -742,7 +743,7 @@ export default function JokeViewer() {
 每个组件文件的顶部应包含版本注释：
 
 ```typescript
-// app/components/theme-toggle.tsx v6.0.0
+// app/components/theme-toggle.tsx v6.1.0
 ```
 
 版本升级规则：
