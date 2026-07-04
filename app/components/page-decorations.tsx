@@ -24,7 +24,7 @@ export const SkeletonCard = React.memo(function SkeletonCard() {
   return (
     <div
       aria-hidden="true"
-      className="flex min-h-[350px] flex-col justify-center rounded-3xl bg-card p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.20)] sm:p-12 md:min-h-[450px] md:p-16 lg:p-20"
+      className="flex min-h-[360px] flex-col justify-center rounded-3xl bg-card p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.20)] md:min-h-[480px] md:p-12"
     >
       <div className="h-12 w-3/4 animate-pulse self-center rounded-xl bg-muted dark:bg-neutral-800" />
     </div>

@@ -76,11 +76,14 @@ export const JokeCard = React.memo(function JokeCard({
       exit="exit"
       variants={cardVariants}
       transition={cardTransition}
+      tabIndex={0}
+      role="region"
+      aria-label="笑话卡片"
       className="touch-pan-y cursor-grab active:cursor-grabbing"
     >
       <Card
         className={cn(
-          'relative flex min-h-[350px] flex-col items-center justify-center p-8 sm:p-12 md:min-h-[450px] md:p-16 lg:p-20'
+          'relative flex min-h-[360px] flex-col items-center justify-center p-8 md:min-h-[480px] md:p-12'
         )}
       >
         <div className="pointer-events-none absolute top-8 left-8 select-none opacity-10 dark:opacity-20">
