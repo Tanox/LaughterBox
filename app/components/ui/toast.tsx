@@ -3,6 +3,7 @@
 // app/components/ui/toast.tsx v6.1.0
 
 import * as React from 'react'
+import { Check, X, Info } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 type ToastVariant = 'success' | 'error' | 'info'
@@ -100,24 +101,33 @@ function ToastViewport({ items }: { items: ToastItem[] }) {
 }
 
 function ToastItemView({ toast }: { toast: ToastItem }) {
-  const variantStyles: Record<ToastVariant, string> = {
-    success:
-      'bg-green-500 text-white shadow-[0_8px_24px_rgba(34,197,94,0.4)]',
-    error:
-      'bg-red-500 text-white shadow-[0_8px_24px_rgba(239,68,68,0.4)]',
-    info:
-      'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 shadow-[0_8px_24px_rgba(0,0,0,0.2)]',
+  const variantConfig: Record<ToastVariant, { icon: React.ReactNode; style: string }> = {
+    success: {
+      icon: <Check className="h-4 w-4" strokeWidth={2.5} />,
+      style: 'bg-green-500 text-white shadow-[0_8px_24px_rgba(34,197,94,0.4)]',
+    },
+    error: {
+      icon: <X className="h-4 w-4" strokeWidth={2.5} />,
+      style: 'bg-red-500 text-white shadow-[0_8px_24px_rgba(239,68,68,0.4)]',
+    },
+    info: {
+      icon: <Info className="h-4 w-4" strokeWidth={2.5} />,
+      style:
+        'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 shadow-[0_8px_24px_rgba(0,0,0,0.2)]',
+    },
   }
+  const config = variantConfig[toast.variant ?? 'info']
   return (
     <div
       role="status"
       aria-live="polite"
       className={cn(
-        'pointer-events-auto rounded-full px-6 py-3 text-sm font-medium',
-        variantStyles[toast.variant ?? 'info']
+        'pointer-events-auto flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium',
+        config.style
       )}
     >
-      {toast.title}
+      {config.icon}
+      <span>{toast.title}</span>
     </div>
   )
 }
