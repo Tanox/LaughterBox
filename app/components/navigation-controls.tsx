@@ -69,7 +69,7 @@ export const NavigationControls = React.memo(function NavigationControls({
       heartTimeoutRef.current = setTimeout(() => setHeartAnimating(false), 500)
       toast({ title: '已加入收藏', variant: 'success', duration: 1800 })
     } else {
-      toast({ title: '已取消收藏', variant: 'info', duration: 1500 })
+      toast({ title: '已取消收藏', variant: 'success', duration: 1500 })
     }
     onToggleFavorite()
   }, [isFavorite, onToggleFavorite, toast])
@@ -90,8 +90,17 @@ export const NavigationControls = React.memo(function NavigationControls({
     }
   }, [jokeText, handleCopy])
 
+  const handleAutoPlay = useCallback(() => {
+    if (autoPlay) {
+      toast({ title: '已停止自动播放', variant: 'info', duration: 1500 })
+    } else {
+      toast({ title: '已开启自动播放', variant: 'info', duration: 1500 })
+    }
+    onToggleAutoPlay()
+  }, [autoPlay, onToggleAutoPlay, toast])
+
   return (
-    <div className="mt-10 flex flex-col items-center gap-5 md:mt-12">
+    <div role="toolbar" aria-label="导航控件" className="mt-10 flex flex-col items-center gap-5 md:mt-12">
       <div className="flex items-center gap-4">
         <Button
           onClick={onPrev}
@@ -132,7 +141,7 @@ export const NavigationControls = React.memo(function NavigationControls({
 
       <div className="flex items-center gap-3">
         <Button
-          onClick={onToggleAutoPlay}
+          onClick={handleAutoPlay}
           variant="icon-ghost"
           size="icon-xs"
           aria-label={autoPlay ? '停止自动播放' : '开始自动播放'}
@@ -183,6 +192,10 @@ export const NavigationControls = React.memo(function NavigationControls({
         >
           <Share2 className="h-5 w-5" strokeWidth={2.25} />
         </Button>
+      </div>
+
+      <div className="text-xs tracking-[0.15em] text-muted-foreground opacity-60">
+        v6.1.0
       </div>
     </div>
   )
