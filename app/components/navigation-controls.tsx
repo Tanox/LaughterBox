@@ -1,9 +1,22 @@
 'use client'
 
-import { Shuffle, Heart, Share2, Copy, ChevronLeft, ChevronRight, Play, Pause, Check } from 'lucide-react'
-import React, { useCallback, useState } from 'react'
+// app/components/navigation-controls.tsx v6.2.0
+
+import {
+  Shuffle,
+  Heart,
+  Share2,
+  Copy,
+  ChevronLeft,
+  ChevronRight,
+  Play,
+  Pause,
+  Check,
+} from 'lucide-react'
+import React, { useCallback, useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/toast'
+import { useClipboard } from '@/hooks/use-clipboard'
 
 interface NavigationControlsProps {
   onRandom: () => void
@@ -14,6 +27,7 @@ interface NavigationControlsProps {
   jokeText: string
   autoPlay: boolean
   onToggleAutoPlay: () => void
+  registerCopy?: (fn: () => void) => void
 }
 
 export const NavigationControls = React.memo(function NavigationControls({
@@ -25,53 +39,37 @@ export const NavigationControls = React.memo(function NavigationControls({
   jokeText,
   autoPlay,
   onToggleAutoPlay,
+  registerCopy,
 }: NavigationControlsProps) {
-  const [copied, setCopied] = useState(false)
   const [heartAnimating, setHeartAnimating] = useState(false)
   const { toast } = useToast()
+  const { copied, copy } = useClipboard()
+  const heartTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const handleCopy = useCallback(() => {
-    try {
-      if (navigator?.clipboard?.writeText) {
-        navigator.clipboard.writeText(jokeText).then(() => {
-          setCopied(true)
-          toast({ title: '已复制到剪贴板', variant: 'success', duration: 2000 })
-          setTimeout(() => setCopied(false), 2000)
-        }).catch(() => fallbackCopy(jokeText))
-      } else {
-        fallbackCopy(jokeText)
-      }
-    } catch {
-      toast({ title: '复制失败，请重试', variant: 'error', duration: 2000 })
-    }
+    copy(jokeText)
+  }, [jokeText, copy])
 
-    function fallbackCopy(text: string) {
-      try {
-        const ta = document.createElement('textarea')
-        ta.value = text
-        ta.setAttribute('readonly', '')
-        ta.style.position = 'absolute'
-        ta.style.left = '-9999px'
-        document.body.appendChild(ta)
-        ta.select()
-        document.execCommand('copy')
-        document.body.removeChild(ta)
-        setCopied(true)
-        toast({ title: '已复制到剪贴板', variant: 'success', duration: 2000 })
-        setTimeout(() => setCopied(false), 2000)
-      } catch {
-        toast({ title: '复制失败，请重试', variant: 'error', duration: 2000 })
-      }
+  useEffect(() => {
+    if (registerCopy) {
+      registerCopy(handleCopy)
     }
-  }, [jokeText, toast])
+  }, [registerCopy, handleCopy])
+
+  useEffect(() => {
+    return () => {
+      if (heartTimeoutRef.current) clearTimeout(heartTimeoutRef.current)
+    }
+  }, [])
 
   const handleToggleFavorite = useCallback(() => {
     if (!isFavorite) {
       setHeartAnimating(true)
-      setTimeout(() => setHeartAnimating(false), 500)
+      if (heartTimeoutRef.current) clearTimeout(heartTimeoutRef.current)
+      heartTimeoutRef.current = setTimeout(() => setHeartAnimating(false), 500)
       toast({ title: '已加入收藏', variant: 'success', duration: 1800 })
     } else {
-      toast({ title: '已取消收藏', variant: 'info', duration: 1500 })
+      toast({ title: '已取消收藏', variant: 'success', duration: 1500 })
     }
     onToggleFavorite()
   }, [isFavorite, onToggleFavorite, toast])
@@ -92,9 +90,17 @@ export const NavigationControls = React.memo(function NavigationControls({
     }
   }, [jokeText, handleCopy])
 
+  const handleAutoPlay = useCallback(() => {
+    if (autoPlay) {
+      toast({ title: '已停止自动播放', variant: 'info', duration: 1500 })
+    } else {
+      toast({ title: '已开启自动播放', variant: 'info', duration: 1500 })
+    }
+    onToggleAutoPlay()
+  }, [autoPlay, onToggleAutoPlay, toast])
+
   return (
-    <div className="mt-10 flex flex-col items-center gap-5 md:mt-12">
-      {/* Primary navigation */}
+    <div role="toolbar" aria-label="导航控件" className="mt-10 flex flex-col items-center gap-5 md:mt-12">
       <div className="flex items-center gap-4">
         <Button
           onClick={onPrev}
@@ -102,7 +108,10 @@ export const NavigationControls = React.memo(function NavigationControls({
           size="icon-sm"
           aria-label="上一个笑话"
         >
-          <ChevronLeft className="h-6 w-6 md:h-7 md:w-7" strokeWidth={2.25} />
+          <ChevronLeft
+            className="h-6 w-6 md:h-7 md:w-7"
+            strokeWidth={2.25}
+          />
         </Button>
 
         <Button
@@ -111,7 +120,10 @@ export const NavigationControls = React.memo(function NavigationControls({
           size="icon-lg"
           aria-label="随机笑话"
         >
-          <Shuffle className="h-6 w-6 md:h-7 md:w-7" strokeWidth={2.25} />
+          <Shuffle
+            className="h-6 w-6 md:h-7 md:w-7"
+            strokeWidth={2.25}
+          />
         </Button>
 
         <Button
@@ -120,20 +132,26 @@ export const NavigationControls = React.memo(function NavigationControls({
           size="icon-sm"
           aria-label="下一个笑话"
         >
-          <ChevronRight className="h-6 w-6 md:h-7 md:w-7" strokeWidth={2.25} />
+          <ChevronRight
+            className="h-6 w-6 md:h-7 md:w-7"
+            strokeWidth={2.25}
+          />
         </Button>
       </div>
 
-      {/* Secondary actions */}
       <div className="flex items-center gap-3">
         <Button
-          onClick={onToggleAutoPlay}
+          onClick={handleAutoPlay}
           variant="icon-ghost"
           size="icon-xs"
           aria-label={autoPlay ? '停止自动播放' : '开始自动播放'}
           className={autoPlay ? 'text-blue-500' : undefined}
         >
-          {autoPlay ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
+          {autoPlay ? (
+            <Pause className="h-5 w-5" strokeWidth={2.25} />
+          ) : (
+            <Play className="h-5 w-5" strokeWidth={2.25} />
+          )}
         </Button>
 
         <Button
@@ -145,10 +163,11 @@ export const NavigationControls = React.memo(function NavigationControls({
         >
           <Heart
             className={[
-              'h-6 w-6',
+              'h-5 w-5',
               isFavorite ? 'fill-current' : '',
               heartAnimating ? 'animate-heartBeat' : '',
             ].join(' ')}
+            strokeWidth={2.25}
           />
         </Button>
 
@@ -159,9 +178,9 @@ export const NavigationControls = React.memo(function NavigationControls({
           aria-label="复制到剪贴板"
         >
           {copied ? (
-            <Check className="h-5 w-5 text-green-500" />
+            <Check className="h-5 w-5 text-green-500" strokeWidth={2.25} />
           ) : (
-            <Copy className="h-5 w-5" />
+            <Copy className="h-5 w-5" strokeWidth={2.25} />
           )}
         </Button>
 
@@ -171,8 +190,12 @@ export const NavigationControls = React.memo(function NavigationControls({
           size="icon-xs"
           aria-label="分享"
         >
-          <Share2 className="h-5 w-5" />
+          <Share2 className="h-5 w-5" strokeWidth={2.25} />
         </Button>
+      </div>
+
+      <div className="text-xs tracking-[0.15em] text-muted-foreground opacity-60">
+        v6.2.0
       </div>
     </div>
   )
