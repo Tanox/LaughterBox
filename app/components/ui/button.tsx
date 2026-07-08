@@ -1,4 +1,4 @@
-// app/components/ui/button.tsx v6.1.0
+// app/components/ui/button.tsx v6.2.0
 
 import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'

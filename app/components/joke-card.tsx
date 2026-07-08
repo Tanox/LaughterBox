@@ -1,6 +1,6 @@
 'use client'
 
-// app/components/joke-card.tsx v6.1.0
+// app/components/joke-card.tsx v6.2.0
 
 import { motion } from 'motion/react'
 import React from 'react'

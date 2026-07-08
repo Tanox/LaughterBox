@@ -1,6 +1,6 @@
 'use client'
 
-// app/hooks/use-clipboard.ts v6.1.0
+// app/hooks/use-clipboard.ts v6.2.0
 
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { copyToClipboard } from '@/lib/clipboard'

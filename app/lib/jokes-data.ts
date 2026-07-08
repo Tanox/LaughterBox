@@ -1,4 +1,4 @@
-// app/lib/jokes-data.ts v6.1.0
+// app/lib/jokes-data.ts v6.2.0
 import { Joke } from './types'
 import { JOKES_BATCH_1 } from './jokes/jokes-batch-1'
 import { JOKES_BATCH_2 } from './jokes/jokes-batch-2'

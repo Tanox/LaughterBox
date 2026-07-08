@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## [6.2.0] - 2026-07-08
+### Added
+- 完善所有页面开发，统一版本号至 v6.2.0。
+- 更新 README.md（中文）：新增收藏列表页面说明、无障碍支持特性、版本号更新。
+- 更新 README_EN.md（英文）：完整重写，与中文版保持内容一致。
+- 更新 openspec/spec.md：版本号、最后更新日期、项目特点、版本历史。
+- 更新 openspec/COMPONENT.md：所有组件版本号至 v6.2.0。
+- 更新 openspec/ARCHITECTURE.md：版本号至 v6.2.0。
+
+### Changed
+- 统一所有源代码文件版本号从 v6.1.0 升至 v6.2.0。
+- 更新 package.json 版本号至 6.2.0。
+
 ## [6.1.0] - 2026-07-04
 ### Fixed
 - 修复 `joke-card.tsx` TypeScript 类型错误：Motion 动画 `ease` 数组类型不匹配。

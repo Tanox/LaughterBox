@@ -1,4 +1,4 @@
-// app/lib/clipboard.ts v6.1.0
+// app/lib/clipboard.ts v6.2.0
 
 /**
  * Fallback copy-to-clipboard using deprecated execCommand.

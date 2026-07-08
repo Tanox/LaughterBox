@@ -1,6 +1,6 @@
 'use client'
 
-// app/components/theme-toggle.tsx v6.1.0
+// app/components/theme-toggle.tsx v6.2.0
 
 import * as React from 'react'
 import { Moon, Sun } from 'lucide-react'

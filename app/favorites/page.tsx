@@ -1,6 +1,6 @@
 'use client'
 
-// app/favorites/page.tsx v6.1.0
+// app/favorites/page.tsx v6.2.0
 
 import { useMemo } from 'react'
 import Link from 'next/link'

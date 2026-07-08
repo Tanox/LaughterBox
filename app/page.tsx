@@ -1,6 +1,6 @@
 'use client'
 
-// app/page.tsx v6.1.0
+// app/page.tsx v6.2.0
 
 import { useState, useCallback, useEffect, useRef } from 'react'
 import Link from 'next/link'

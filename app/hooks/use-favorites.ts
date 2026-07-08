@@ -1,6 +1,6 @@
 'use client'
 
-// app/hooks/use-favorites.ts v6.1.0
+// app/hooks/use-favorites.ts v6.2.0
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 

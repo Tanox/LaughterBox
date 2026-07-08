@@ -1,6 +1,6 @@
 'use client'
 
-// app/components/ui/toast.tsx v6.1.0
+// app/components/ui/toast.tsx v6.2.0
 
 import * as React from 'react'
 import { Check, X, Info } from 'lucide-react'

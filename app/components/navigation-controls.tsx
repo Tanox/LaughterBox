@@ -1,6 +1,6 @@
 'use client'
 
-// app/components/navigation-controls.tsx v6.1.0
+// app/components/navigation-controls.tsx v6.2.0
 
 import {
   Shuffle,
@@ -195,7 +195,7 @@ export const NavigationControls = React.memo(function NavigationControls({
       </div>
 
       <div className="text-xs tracking-[0.15em] text-muted-foreground opacity-60">
-        v6.1.0
+        v6.2.0
       </div>
     </div>
   )

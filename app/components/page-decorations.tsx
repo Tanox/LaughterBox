@@ -1,4 +1,4 @@
-// app/components/page-decorations.tsx v6.1.0
+// app/components/page-decorations.tsx v6.2.0
 
 import React from 'react'
 
