@@ -135,6 +135,12 @@ export default function Page() {
       id="page-wrapper"
       className="flex min-h-screen flex-col bg-background transition-colors duration-300"
     >
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:text-primary-foreground"
+      >
+        跳转到主要内容
+      </a>
       <header
         id="main-header"
         className="sticky top-0 z-10 border-b border-border/50 bg-background/90 backdrop-blur-md"
@@ -172,7 +178,7 @@ export default function Page() {
         </div>
       </header>
 
-      <main className="flex flex-1 flex-col items-center justify-center overflow-hidden px-4 py-6 md:px-12 lg:px-24">
+      <main id="main-content" className="flex flex-1 flex-col items-center justify-center overflow-hidden px-4 py-6 md:px-12 lg:px-24">
         <div className="relative w-full max-w-3xl lg:max-w-4xl">
           <AnimatePresence mode="wait" custom={direction}>
             {isReady && JOKES_COUNT > 0 && currentJoke ? (

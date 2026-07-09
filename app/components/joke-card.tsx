@@ -100,7 +100,7 @@ export const JokeCard = React.memo(function JokeCard({
 
           <div className="flex items-center gap-4 opacity-30">
             <div className="h-px w-8 bg-current" />
-            <span className="font-mono text-xs tracking-widest uppercase">
+            <span className="font-mono text-xs tracking-widest uppercase tabular-nums">
               {String(index + 1).padStart(3, '0')} /{' '}
               {String(total).padStart(3, '0')}
             </span>

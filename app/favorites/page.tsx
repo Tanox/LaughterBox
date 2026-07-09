@@ -29,6 +29,12 @@ export default function FavoritesPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background transition-colors duration-300">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:text-primary-foreground"
+      >
+        跳转到主要内容
+      </a>
       <header className="sticky top-0 z-10 border-b border-border/50 bg-background/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3 md:px-8">
           <Link
@@ -43,11 +49,11 @@ export default function FavoritesPage() {
             <Heart className="h-4 w-4 fill-red-500 text-red-500" strokeWidth={2.25} />
             我的收藏
           </h1>
-          <span className="text-xs text-muted-foreground">{favoriteJokes.length} 则</span>
+          <span className="text-xs text-muted-foreground tabular-nums">{favoriteJokes.length} 则</span>
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6 md:px-8 md:py-10">
+      <main id="main-content" className="mx-auto w-full max-w-3xl flex-1 px-4 py-6 md:px-8 md:py-10">
         {!isLoaded ? (
           <div className="space-y-3">
             {[0, 1, 2].map((i) => (
