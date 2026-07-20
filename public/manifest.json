@@ -1,12 +1,16 @@
 {
   "name": "LaughterBox",
   "short_name": "LaughterBox",
-  "description": "最全面的短篇笑话集合，每篇控制在 100 字以内。",
+  "description": "最全面的中文短篇笑话集合，每篇控制在 100 字以内。",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "orientation": "portrait",
+  "dir": "ltr",
+  "lang": "zh-CN",
+  "categories": ["entertainment", "lifestyle", "books"],
   "icons": [
     {
       "src": "/icon-192x192.svg",
